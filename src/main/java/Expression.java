@@ -16,7 +16,7 @@ public class Expression {
         return content;
     }
 
-    public static String[] operations = {"+", "-", "*", "/", "^", "sin", "cos", "(", ")"};
+    public static String[] operations = {"+", "-", "*", "/", "^", "sin", "cos", "(", ")", "exp"};
 
     public static Expression parseExpression(String s){
         List<ExpressionPart> parts = new ArrayList<>();

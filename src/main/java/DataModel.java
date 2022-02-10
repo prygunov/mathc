@@ -51,7 +51,7 @@ public class DataModel {
                             if (!stack.isEmpty()) {
                                 int lastPriority = getPriority(stack.peek());
                                 int thisPriority = getPriority(expressionPart);
-                                if (lastPriority>thisPriority) {
+                                if (lastPriority>=thisPriority) {
                                     poop(getPriority(expressionPart));
                                     push(expressionPart);
                                 }else push(expressionPart);
@@ -106,6 +106,7 @@ public class DataModel {
                 return 2;
             case "sin":
             case "cos":
+            case "exp":
                 return 3;
             case "^":
                 return 4;

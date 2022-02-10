@@ -36,4 +36,15 @@ public class ExpressionTest {
 
         assertEquals(post, postData.toString());
     }
+
+    @org.junit.Test
+    public void testFourthPostfix() {
+        String in = "exp(sin(a+b/(c-d)))";
+        String post = "abcd-/+sinexp";
+
+        Expression expression = Expression.parseExpression(in);
+        Expression postData = dataModel.getPostFixEx(expression);
+
+        assertEquals(post, postData.toString());
+    }
 }
