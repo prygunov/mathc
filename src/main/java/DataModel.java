@@ -1,10 +1,7 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 import java.util.function.Consumer;
-import java.util.function.IntConsumer;
-import java.util.function.Predicate;
 
 public class DataModel {
 
@@ -48,14 +45,14 @@ public class DataModel {
                             push(expressionPart);
                             break;
                         case ")":
-                            pop();
+                            poop();
                             break;
                         default: {
                             if (!stack.isEmpty()) {
                                 int lastPriority = getPriority(stack.peek());
                                 int thisPriority = getPriority(expressionPart);
-                                if (lastPriority>=thisPriority) {
-                                    pop(getPriority(expressionPart));
+                                if (lastPriority>thisPriority) {
+                                    poop(getPriority(expressionPart));
                                     push(expressionPart);
                                 }else push(expressionPart);
                             } else push(expressionPart);
@@ -68,7 +65,7 @@ public class DataModel {
                 }
             }
 
-            private void pop() {
+            private void poop() {
                 for (int i = 0; i < stack.size(); i++) {
                     ExpressionPart part = stack.pop();
                     if (part.getValue().equals("(")) {
@@ -78,7 +75,7 @@ public class DataModel {
                 }
             }
 
-            private void pop(int priority) {
+            private void poop(int priority) {
                 for (int i = 0; i < stack.size(); i++) {
                     ExpressionPart part = stack.pop();
                     if (part.getValue().equals("(") || getPriority(part) < priority) {
@@ -103,15 +100,15 @@ public class DataModel {
         switch (part.getValue()){
             case "(":
             case ")":
-                return 4;
+                return 5;
             case "*":
             case "/":
                 return 2;
             case "sin":
             case "cos":
-                return 2;
-            case "^":
                 return 3;
+            case "^":
+                return 4;
             default:
                 return 1;
         }

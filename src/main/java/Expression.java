@@ -29,6 +29,10 @@ public class Expression {
                     partBuilder.setLength(0);
                 }
             }else {
+                if (partBuilder.length()>1){
+                    i -= partBuilder.length() - 1;
+                    partBuilder.setLength(1);
+                }
                 parts.add(new ExpressionPart(partBuilder.toString(), false));
                 partBuilder.setLength(0);
             }
