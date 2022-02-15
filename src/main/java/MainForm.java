@@ -1,13 +1,17 @@
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Enumeration;
+import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainForm extends JFrame{
+
     private JPanel root;
     private JTextField resultField;
     private JTextField expressionField;
@@ -19,17 +23,23 @@ public class MainForm extends JFrame{
     private JLabel tickTime;
     private JButton clearButton;
     private JPanel listPanel;
+    private JTable table1;
     private final DataModel dataModel;
     private final DefaultListModel<String> listModel;
     private final Timer timer;
 
-
     MainForm(){
+
         dataModel = new DataModel();
         listModel = new DefaultListModel<>();
         list1.setModel(listModel);
         timer = new Timer();
         listPanel.setBackground(list1.getBackground());
+
+        DefaultTableModel tableModel = new DefaultTableModel();
+        tableModel.addColumn("Переменные");
+        tableModel.addColumn("Значения");
+        table1.setModel(tableModel);
 
         setContentPane(root);
         setSize(700, 650);
@@ -64,6 +74,18 @@ public class MainForm extends JFrame{
         clearButton.addActionListener(e -> {
             dataModel.clear();
             updateUI(null);
+        });
+        expressionField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Expression expression = Expression.parseExpression(expressionField.getText());
+                tableModel.getDataVector().removeAllElements();
+                for (ExpressionPart part : expression.getContent()) {
+                    Object[] row = {part.getValue(), ""};
+                    if (!part.isCommand())
+                    tableModel.addRow(row);
+                }
+            }
         });
     }
 
