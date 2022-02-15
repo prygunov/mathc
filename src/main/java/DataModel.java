@@ -5,37 +5,14 @@ import java.util.function.Consumer;
 
 public class DataModel {
 
-
-
-
-    /*public String result(Expression reg){
-        String result;
-        while(){
-
-        }
-    }*/
-
-   /* public boolean isReady(String reg){
-        boolean ready = false;
-        for (int i = 0; i < reg.length(); i++) {
-            if (!ready)
-                Arrays.stream(supportedOperations).anyMatch(new Predicate<String>() {
-                    @Override
-                    public boolean test(String s) {
-                        return String.valueOf(reg.charAt(i));
-                    }
-                });
-        }
-    }*/
+    private Solution solution;
 
     public Expression getPostFixEx(Expression expression) {
         // Перебираем expressionList
         Stack<ExpressionPart> stack = new Stack<>();
         List<ExpressionPart> expression1 = new ArrayList<>();
 
-        expression.getContent().forEach(new Consumer<ExpressionPart>() {
-
-
+        expression.getContent().forEach(new Consumer<>() {
 
             @Override
             public void accept(ExpressionPart expressionPart) {
@@ -51,16 +28,15 @@ public class DataModel {
                             if (!stack.isEmpty()) {
                                 int lastPriority = getPriority(stack.peek());
                                 int thisPriority = getPriority(expressionPart);
-                                if (lastPriority>=thisPriority) {
+                                if (lastPriority >= thisPriority) {
                                     poop(getPriority(expressionPart));
                                     push(expressionPart);
-                                }else push(expressionPart);
+                                } else push(expressionPart);
                             } else push(expressionPart);
                         }
                         break;
-
                     }
-                }else{
+                } else {
                     expression1.add(expressionPart);
                 }
             }
@@ -96,6 +72,8 @@ public class DataModel {
         return new Expression(expression1);
     }
 
+
+
     int getPriority(ExpressionPart part){
         switch (part.getValue()){
             case "(":
@@ -115,4 +93,12 @@ public class DataModel {
         }
     }
 
+    public Solution prepareSolution(String s){
+        solution = new Solution(Expression.parseExpression(s));
+        return solution;
+    }
+
+    public Solution getSolution(){
+        return solution;
+    }
 }

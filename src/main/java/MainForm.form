@@ -8,7 +8,7 @@
     <properties/>
     <border type="none"/>
     <children>
-      <component id="c3c3c" class="javax.swing.JTextField" binding="textField1" default-binding="true">
+      <component id="c3c3c" class="javax.swing.JTextField" binding="resultField">
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="-1"/>
@@ -18,7 +18,7 @@
           <editable value="false"/>
         </properties>
       </component>
-      <component id="2d37d" class="javax.swing.JTextField" binding="textField2" default-binding="true">
+      <component id="2d37d" class="javax.swing.JTextField" binding="expressionField">
         <constraints>
           <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="-1"/>
@@ -34,7 +34,7 @@
         </constraints>
         <properties/>
       </component>
-      <component id="6670d" class="javax.swing.JButton" binding="результатButton" default-binding="true">
+      <component id="6670d" class="javax.swing.JButton" binding="resultButton">
         <constraints>
           <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -42,7 +42,7 @@
           <text value="Результат"/>
         </properties>
       </component>
-      <component id="8d075" class="javax.swing.JButton" binding="автоматическиButton" default-binding="true">
+      <component id="8d075" class="javax.swing.JButton" binding="autoButton">
         <constraints>
           <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -50,7 +50,7 @@
           <text value="Автоматически"/>
         </properties>
       </component>
-      <component id="8b1b1" class="javax.swing.JButton" binding="тактButton" default-binding="true">
+      <component id="8b1b1" class="javax.swing.JButton" binding="tickButton">
         <constraints>
           <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -62,9 +62,11 @@
         <constraints>
           <grid row="3" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
-        <properties/>
+        <properties>
+          <maximum value="500"/>
+        </properties>
       </component>
-      <component id="69011" class="javax.swing.JLabel">
+      <component id="69011" class="javax.swing.JLabel" binding="tickTime">
         <constraints>
           <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
