@@ -16,7 +16,7 @@ public class Expression {
 
     public static String[] operations = {"+", "-", "*", "/", "^", "sin", "cos", "(", ")", "exp"};
 
-    public static Expression parseExpression(String s){
+    public static Expression parseExpression(String s){ // перевод строки в выражение
         List<ExpressionPart> parts = new ArrayList<>();
         StringBuilder partBuilder = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
@@ -26,7 +26,7 @@ public class Expression {
                     parts.add(new ExpressionPart(partBuilder.toString(), true));
                     partBuilder.setLength(0);
                 }
-            }else {
+            }else{
                 if (partBuilder.length()>1){
                     i -= partBuilder.length() - 1;
                     partBuilder.setLength(1);
@@ -34,7 +34,6 @@ public class Expression {
                 parts.add(new ExpressionPart(partBuilder.toString(), false));
                 partBuilder.setLength(0);
             }
-
         }
         return new Expression(parts);
     }

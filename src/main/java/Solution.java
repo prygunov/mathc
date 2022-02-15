@@ -24,20 +24,20 @@ public class Solution {
             if (expressionPart.isCommand()) {
                 switch (expressionPart.getValue()) {
                     case "(":
-                        push(expressionPart);
+                        push(expressionPart); // запихуеваем в стек
                         break;
                     case ")":
-                        poop();
+                        poop(); // достать из стека все, пока не встретим левую скобку
                         break;
                     default: {
                         if (!stack.isEmpty()) {
                             int lastPriority = getPriority(stack.peek());
                             int thisPriority = getPriority(expressionPart);
-                            if (lastPriority>=thisPriority) {
-                                poop(getPriority(expressionPart));
+                            if (lastPriority>=thisPriority) {// если приоритет последней операции в стеке больше или равен текущему
+                                poop(getPriority(expressionPart)); // (не смотри) // достаем в результат все пока не встретим
                                 push(expressionPart);
-                            }else push(expressionPart);
-                        } else push(expressionPart);
+                            } else push(expressionPart); // иначе запихуеваем в стек
+                        } else push(expressionPart); // запихуеваем в стек
                     }
                     break;
                 }
