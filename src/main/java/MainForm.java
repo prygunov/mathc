@@ -18,9 +18,10 @@ public class MainForm extends JFrame{
     private JSlider timeSlider;
     private JLabel tickTime;
     private JButton clearButton;
-    private DataModel dataModel;
-    private DefaultListModel<String> listModel;
-    private Timer timer;
+    private JPanel listPanel;
+    private final DataModel dataModel;
+    private final DefaultListModel<String> listModel;
+    private final Timer timer;
 
 
     MainForm(){
@@ -28,6 +29,7 @@ public class MainForm extends JFrame{
         listModel = new DefaultListModel<>();
         list1.setModel(listModel);
         timer = new Timer();
+        listPanel.setBackground(list1.getBackground());
 
         setContentPane(root);
         setSize(700, 650);
@@ -35,16 +37,13 @@ public class MainForm extends JFrame{
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        resultButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Solution s = dataModel.getSolution();
-                if (s == null)
-                    s = dataModel.prepareSolution(expressionField.getText());
-                while (!s.done)
-                    s.tick();
-                updateUI(s);
-            }
+        resultButton.addActionListener(e -> {
+            Solution s = dataModel.getSolution();
+            if (s == null)
+                s = dataModel.prepareSolution(expressionField.getText());
+            while (!s.done)
+                s.tick();
+            updateUI(s);
         });
 
         tickButton.addActionListener(e -> {
@@ -55,27 +54,16 @@ public class MainForm extends JFrame{
         });
 
 
-        autoButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (dataModel.getSolution() == null)
-                    dataModel.prepareSolution(expressionField.getText());
+        autoButton.addActionListener(e -> {
+            if (dataModel.getSolution() == null)
+                dataModel.prepareSolution(expressionField.getText());
 
-                timer.schedule(new Repeater(dataModel.getSolution()), timeSlider.getValue()*10);
-            }
+            timer.schedule(new Repeater(dataModel.getSolution()), timeSlider.getValue()* 10L);
         });
-        timeSlider.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                tickTime.setText("Время такта: " + (timeSlider.getValue()/100) + " с.");
-            }
-        });
-        clearButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dataModel.clear();
-                updateUI(null);
-            }
+        timeSlider.addChangeListener(e -> tickTime.setText("Время такта: " + (timeSlider.getValue()/100f) + " с."));
+        clearButton.addActionListener(e -> {
+            dataModel.clear();
+            updateUI(null);
         });
     }
 
@@ -107,7 +95,7 @@ public class MainForm extends JFrame{
             if (!solution.done) {
                 solution.tick();
                 updateUI(solution);
-                timer.schedule(new Repeater(solution), timeSlider.getValue()*10);
+                timer.schedule(new Repeater(solution), timeSlider.getValue()* 10L);
             }
         }
     }
