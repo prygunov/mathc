@@ -1,3 +1,8 @@
+package net.artux.mathc.data;
+
+import net.artux.mathc.model.Expression;
+import net.artux.mathc.model.ExpressionPart;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -10,7 +15,7 @@ public class Solution {
     boolean done;
     int i = 0;
 
-    Solution(Expression expression){
+    public Solution(Expression expression){
         stack = new Stack<>();
         resultExpression = new ArrayList<>();
         this.expression = expression;
@@ -18,7 +23,10 @@ public class Solution {
 
     }
 
-    public void tick(){
+    public void tick() throws SolutionException{
+        if (isDone())
+            throw new SolutionException("Выражение преобразовано");
+
         if (i<expression.getContent().size()){
             ExpressionPart expressionPart = expression.getContent().get(i++);
             if (expressionPart.isCommand()) {
@@ -77,26 +85,20 @@ public class Solution {
         }
     }
 
+    public boolean isDone() {
+        return done;
+    }
+
     private void push(ExpressionPart part) {
         stack.push(part);
     }
 
     int getPriority(ExpressionPart part){
-        switch (part.getValue()){
-            case "(":
-            case ")":
-                return 5;
-            case "*":
-            case "/":
-                return 2;
-            case "sin":
-            case "cos":
-            case "exp":
-                return 3;
-            case "^":
-                return 4;
-            default:
-                return 1;
-        }
+        return switch (part.getValue()) {
+            case "*", "/" -> 2;
+            case "sin", "cos", "exp" -> 3;
+            case "^" -> 4;
+            default -> 1;
+        };
     }
 }

@@ -1,3 +1,5 @@
+package net.artux.mathc.model;
+
 public class ExpressionPart {
 
     ExpressionPart(ExpressionPart part){

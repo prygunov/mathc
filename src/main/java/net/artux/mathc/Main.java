@@ -1,3 +1,5 @@
+package net.artux.mathc;
+
 import javax.swing.*;
 
 public class Main{

@@ -1,8 +1,11 @@
+import net.artux.mathc.data.DataModel;
+import net.artux.mathc.data.Solution;
+import net.artux.mathc.data.SolutionException;
+import net.artux.mathc.model.Expression;
+
 import static org.junit.Assert.*;
 
 public class ExpressionTest {
-
-    DataModel dataModel = new DataModel();
 
     @org.junit.Test
     public void testPostfix() {
@@ -10,7 +13,7 @@ public class ExpressionTest {
         String post = "58*29+*75-8+955**-5++";
 
         Expression expression = Expression.parseExpression(in);
-        Expression postData = dataModel.getPostFixEx(expression);
+        Expression postData = result(expression);
 
         assertEquals(post, postData.toString());
     }
@@ -21,7 +24,7 @@ public class ExpressionTest {
         String post = "58*29+/";
 
         Expression expression = Expression.parseExpression(in);
-        Expression postData = dataModel.getPostFixEx(expression);
+        Expression postData = result(expression);
 
         assertEquals(post, postData.toString());
     }
@@ -32,7 +35,7 @@ public class ExpressionTest {
         String post = "abcde/-sin*+";
 
         Expression expression = Expression.parseExpression(in);
-        Expression postData = dataModel.getPostFixEx(expression);
+        Expression postData = result(expression);
 
         assertEquals(post, postData.toString());
     }
@@ -43,8 +46,19 @@ public class ExpressionTest {
         String post = "abcd-/+sinexp";
 
         Expression expression = Expression.parseExpression(in);
-        Expression postData = dataModel.getPostFixEx(expression);
+        Expression postData = result(expression);
 
         assertEquals(post, postData.toString());
+    }
+
+    Expression result(Expression expression) {
+        Solution solution = new Solution(expression);
+        try {
+            while (!solution.isDone())
+                solution.tick();
+        } catch (SolutionException e) {
+            e.printStackTrace();
+        }
+        return new Expression(solution.getResultExpression());
     }
 }
