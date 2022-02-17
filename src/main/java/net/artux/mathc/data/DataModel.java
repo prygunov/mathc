@@ -3,7 +3,6 @@ package net.artux.mathc.data;
 import net.artux.mathc.model.Expression;
 import net.artux.mathc.ui.DataChangeListener;
 
-import java.sql.Time;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -18,17 +17,6 @@ public class DataModel {
         timer = new Timer();
     }
 
-    public Expression getPostFixResult(Expression expression) {
-        solution = new Solution(expression);
-        try {
-            while (!solution.done)
-                solution.tick();
-            return new Expression(solution.getResultExpression());
-        } catch (Exception ignored) {
-        }
-        return null;
-    }
-
     public void setExpression(Expression expression) {
         solution = new Solution(expression);
         dataChangeListener.updateSolution(solution);
@@ -41,7 +29,10 @@ public class DataModel {
     }
 
     public void delayTicks(long tickTime) throws SolutionException {
-        timer.scheduleAtFixedRate(new Repeater(getSolution(), dataChangeListener), tickTime, tickTime);
+        Solution solution = getSolution();
+        if (!solution.isDone())
+            timer.scheduleAtFixedRate(new Repeater(getSolution(), dataChangeListener), tickTime, tickTime);
+        else throw new SolutionException("Выражение уже преобразовано");
     }
 
     public void stopTicks(){
@@ -50,7 +41,7 @@ public class DataModel {
     }
 
     public void allTicks() throws SolutionException {
-        while (!solution.done)
+        while (!solution.isDone())
             solution.tick();
         dataChangeListener.updateSolution(solution);
     }
@@ -66,7 +57,7 @@ public class DataModel {
         dataChangeListener.updateSolution(null);
     }
 
-    class Repeater extends TimerTask {
+    static class Repeater extends TimerTask {
 
         private final Solution solution;
         private final DataChangeListener dataChangeListener;

@@ -9,45 +9,39 @@ import java.util.Stack;
 
 public class Solution {
 
-    private Stack<ExpressionPart> stack;
-    private Expression expression;
-    List<ExpressionPart> resultExpression;
-    boolean done;
-    int i = 0;
+    private final Stack<ExpressionPart> stack;
+    private final Expression expression;
+    private final List<ExpressionPart> resultExpression;
+    private boolean done;
+    private int i = 0;
 
     public Solution(Expression expression){
         stack = new Stack<>();
         resultExpression = new ArrayList<>();
         this.expression = expression;
         done = false;
-
     }
 
     public void tick() throws SolutionException{
         if (isDone())
-            throw new SolutionException("Выражение преобразовано");
+            throw new SolutionException("Выражение уже преобразовано");
 
         if (i<expression.getContent().size()){
             ExpressionPart expressionPart = expression.getContent().get(i++);
             if (expressionPart.isCommand()) {
                 switch (expressionPart.getValue()) {
-                    case "(":
-                        push(expressionPart); // запихуеваем в стек
-                        break;
-                    case ")":
-                        poop(); // достать из стека все, пока не встретим левую скобку
-                        break;
-                    default: {
+                    case "(" -> push(expressionPart); // запихуеваем в стек
+                    case ")" -> poop(); // достать из стека все, пока не встретим левую скобку
+                    default -> {
                         if (!stack.isEmpty()) {
                             int lastPriority = getPriority(stack.peek());
                             int thisPriority = getPriority(expressionPart);
-                            if (lastPriority>=thisPriority) {// если приоритет последней операции в стеке больше или равен текущему
+                            if (lastPriority >= thisPriority) {// если приоритет последней операции в стеке больше или равен текущему
                                 poop(getPriority(expressionPart)); // (не смотри) // достаем в результат все пока не встретим
                                 push(expressionPart);
                             } else push(expressionPart); // иначе запихуеваем в стек
                         } else push(expressionPart); // запихуеваем в стек
                     }
-                    break;
                 }
             }else{
                 resultExpression.add(expressionPart);
