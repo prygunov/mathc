@@ -58,8 +58,8 @@ public class DataModel {
     }
 
     public void clear() {
-        solution = null;
-        dataChangeListener.updateSolution(null);
+        setExpression(solution.getExpression());
+        dataChangeListener.updateSolution(solution);
     }
 
     static class Repeater extends TimerTask {

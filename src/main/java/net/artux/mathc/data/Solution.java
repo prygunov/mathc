@@ -78,7 +78,7 @@ public class Solution {
         for (int i = 0; i < size; i++) {
             if (!stack.peek().getValue().equals("(")) {
                 ExpressionPart part = stack.pop();
-                if (part.getValue().equals("(") || getPriority(part) < priority) {
+                if (getPriority(part) < priority) {
                     break;
                 }
                 resultExpression.add(part);
