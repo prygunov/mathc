@@ -51,7 +51,7 @@ public class ExpressionTest {
         assertEquals(post, postData.toString());
     }
 
-    Expression result(Expression expression) {
+    public static Expression result(Expression expression) {
         Solution solution = new Solution(expression);
         try {
             while (!solution.isDone())

@@ -5,6 +5,7 @@ import net.artux.mathc.model.ExpressionPart;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 public class Solution {
@@ -46,9 +47,11 @@ public class Solution {
             }else{
                 resultExpression.add(expressionPart);
             }
-        }else if (!stack.isEmpty())
+        }else if (!stack.isEmpty()){
             resultExpression.add(stack.pop());
-        else done = true;
+            if(stack.isEmpty())
+                done = true;
+        }
     }
 
     public Stack<ExpressionPart> getStack(){
@@ -94,5 +97,14 @@ public class Solution {
             case "^" -> 4;
             default -> 1;
         };
+    }
+
+    double count(Map<String, Double> values) throws SolutionException{
+        if (isDone()){
+            i = 0;
+            return 0;
+        }
+
+        else throw new SolutionException("Выражение еще не преобразовано в постфиксную форму");
     }
 }
