@@ -1,9 +1,7 @@
 package net.artux.mathc;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 
 public class Config {
 

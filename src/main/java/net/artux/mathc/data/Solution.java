@@ -35,7 +35,7 @@ public class Solution {
             }else if (expressionPart.getValue().equals(")"))
                 poop();
             else if (expressionPart.isCommand()) {
-                if (!stack.isEmpty()) {
+                if (!stack.isEmpty() && !stack.peek().getValue().equals("(")) {
                     int lastPriority = getPriority(stack.peek());
                     int thisPriority = getPriority(expressionPart);
                     if (lastPriority >= thisPriority) {// если приоритет последней операции в стеке больше или равен текущему
