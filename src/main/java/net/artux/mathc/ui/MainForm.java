@@ -126,6 +126,7 @@ public class MainForm extends JFrame implements DataChangeListener {
                 listModel.add(0, expressionPartEnumeration.nextElement().getValue());
             }
             list1.setSelectedIndex(0);
+            list1.setEnabled(false);
 
             Expression e = new Expression(solution.getResultExpression());
             resultField.setText(e.toString());
