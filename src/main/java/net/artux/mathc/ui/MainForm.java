@@ -1,5 +1,6 @@
 package net.artux.mathc.ui;
 
+import net.artux.mathc.Application;
 import net.artux.mathc.data.DataModel;
 import net.artux.mathc.data.Solution;
 import net.artux.mathc.data.SolutionException;
@@ -8,6 +9,10 @@ import net.artux.mathc.model.ExpressionPart;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Enumeration;
 
 public class MainForm extends JFrame implements DataChangeListener {
@@ -24,22 +29,21 @@ public class MainForm extends JFrame implements DataChangeListener {
     private JButton clearButton;
     private JPanel listPanel;
     private JTable table1;
-    private final DataModel dataModel;
     private final DefaultListModel<String> listModel;
+    private final DefaultTableModel tableModel;
+    private final Application application;
 
-    public MainForm(){
-        dataModel = new DataModel(this);
+    public MainForm(Application application) {
+        this.application = application;
+
         listModel = new DefaultListModel<>();
         list1.setModel(listModel);
         listPanel.setBackground(list1.getBackground());
 
-        DefaultTableModel tableModel = new DefaultTableModel(){
+        tableModel = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
-                if (column == 0)
-                    return false;
-                else
-                    return true;
+                return column != 0;
             }
         };
         tableModel.addColumn("Переменные");
@@ -52,12 +56,13 @@ public class MainForm extends JFrame implements DataChangeListener {
         setContentPane(root);
         setSize(700, 650);
         setLocationByPlatform(true);
+        setTitle("Трансляция выражений");
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         resultButton.addActionListener(e -> {
             try {
-                dataModel.allTicks();
+                application.getDataModel().allTicks();
             } catch (SolutionException ex) {
                 error(ex);
             }
@@ -65,7 +70,7 @@ public class MainForm extends JFrame implements DataChangeListener {
 
         tickButton.addActionListener(e -> {
             try {
-                dataModel.tick();
+                application.getDataModel().tick();
             } catch (Exception ex) {
                 error(ex);
             }
@@ -73,23 +78,39 @@ public class MainForm extends JFrame implements DataChangeListener {
 
         autoButton.addActionListener(e -> {
             try {
-                dataModel.delayTicks(timeSlider.getValue()* 10L);
+                application.getDataModel().delayTicks(timeSlider.getValue() * 10L);
             } catch (SolutionException ex) {
                 error(ex);
             }
         });
 
-        timeSlider.addChangeListener(e -> tickTime.setText("Время такта: " + (timeSlider.getValue()/100f) + " с."));
-        clearButton.addActionListener(e -> dataModel.clear());
+        timeSlider.addChangeListener(e -> tickTime.setText("Время такта: " + (timeSlider.getValue() / 100f) + " с."));
+        clearButton.addActionListener(e -> application.getDataModel().clear());
 
-        expressionField.addActionListener(e -> {
-            Expression expression = Expression.parseExpression(expressionField.getText());
-            dataModel.setExpression(expression);
-            tableModel.getDataVector().removeAllElements();
-            for (ExpressionPart part : expression.getContent()) {
-                Object[] row = {part.getValue(), ""};
-                if (!part.isCommand())
-                tableModel.addRow(row);
+        expressionField.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                application.getInputForm().setVisible(true);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
             }
         });
     }
@@ -98,7 +119,8 @@ public class MainForm extends JFrame implements DataChangeListener {
     @Override
     public void updateSolution(Solution solution) {
         listModel.removeAllElements();
-        if (solution!=null) {
+        if (solution != null) {
+            expressionField.setText(solution.getExpression().toString());
             Enumeration<ExpressionPart> expressionPartEnumeration = solution.getStack().elements();
             while (expressionPartEnumeration.hasMoreElements()) {
                 listModel.add(0, expressionPartEnumeration.nextElement().getValue());
@@ -106,7 +128,16 @@ public class MainForm extends JFrame implements DataChangeListener {
 
             Expression e = new Expression(solution.getResultExpression());
             resultField.setText(e.toString());
-        }else{
+            if (solution.isDone()) {
+                tableModel.getDataVector().removeAllElements();
+                for (ExpressionPart part : e.getContent()) {
+                    Object[] row = {part.getValue(), ""};
+                    if (!part.isCommand())
+                        tableModel.addRow(row);
+                }
+            }
+        } else {
+            expressionField.setText("Кликните для ввода");
             resultField.setText("");
         }
     }

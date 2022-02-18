@@ -1,9 +1,8 @@
-import net.artux.mathc.data.DataModel;
 import net.artux.mathc.data.Solution;
 import net.artux.mathc.data.SolutionException;
 import net.artux.mathc.model.Expression;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class ExpressionTest {
 
@@ -44,6 +43,28 @@ public class ExpressionTest {
     public void testFourthPostfix() {
         String in = "exp(sin(a+b/(c-d)))";
         String post = "abcd-/+sinexp";
+
+        Expression expression = Expression.parseExpression(in);
+        Expression postData = result(expression);
+
+        assertEquals(post, postData.toString());
+    }
+
+    @org.junit.Test
+    public void testFifthPostfix() {
+        String in = "cos(f^sin(b))";
+        String post = "fbsin^cos";
+
+        Expression expression = Expression.parseExpression(in);
+        Expression postData = result(expression);
+
+        assertEquals(post, postData.toString());
+    }
+
+    @org.junit.Test
+    public void testSixthPostfix() {
+        String in = "cos(e^h*d+c)";
+        String post = "eh^d*c+cos";
 
         Expression expression = Expression.parseExpression(in);
         Expression postData = result(expression);

@@ -6,7 +6,6 @@ import net.artux.mathc.model.ExpressionPart;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 
 public class Solution {
@@ -33,16 +32,16 @@ public class Solution {
             if (expressionPart.getValue().equals("(")){
                 push(expressionPart);
             }else if (expressionPart.getValue().equals(")"))
-                poop();
+                pop();
             else if (expressionPart.isCommand()) {
                 if (!stack.isEmpty() && !stack.peek().getValue().equals("(")) {
                     int lastPriority = getPriority(stack.peek());
                     int thisPriority = getPriority(expressionPart);
                     if (lastPriority >= thisPriority) {// если приоритет последней операции в стеке больше или равен текущему
-                        poop(getPriority(expressionPart)); // (не смотри) // достаем в результат все пока не встретим
-                        push(expressionPart);
-                    } else push(expressionPart); // иначе запихуеваем в стек
-                } else push(expressionPart); // запихуеваем в стек
+                        pop(getPriority(expressionPart)); // (не смотри) // достаем в результат все пока не встретим
+                    }
+                }
+                push(expressionPart);
             }else{
                 resultExpression.add(expressionPart);
             }
@@ -63,8 +62,9 @@ public class Solution {
         return resultExpression;
     }
 
-    private void poop() {
-        for (int i = 0; i < stack.size(); i++) {
+    private void pop() {
+        int size = stack.size();
+        for (int i = 0; i < size; i++) {
             ExpressionPart part = stack.pop();
             if (part.getValue().equals("(")) {
                 break;
@@ -73,14 +73,21 @@ public class Solution {
         }
     }
 
-    private void poop(int priority) {
-        for (int i = 0; i < stack.size(); i++) {
-            ExpressionPart part = stack.pop();
-            if (part.getValue().equals("(") || getPriority(part) < priority) {
-                break;
+    private void pop(int priority) {
+        int size = stack.size();
+        for (int i = 0; i < size; i++) {
+            if (!stack.peek().getValue().equals("(")) {
+                ExpressionPart part = stack.pop();
+                if (part.getValue().equals("(") || getPriority(part) < priority) {
+                    break;
+                }
+                resultExpression.add(part);
             }
-            resultExpression.add(part);
         }
+    }
+
+    public Expression getExpression() {
+        return expression;
     }
 
     public boolean isDone() {

@@ -8,12 +8,18 @@ public class Operation {
 
     private String name;
     private int priority;
+    private OperationType type;
     private Computer computer;
 
-    public Operation(String name, int priority, Computer computer) {
+    public Operation(String name, int priority, OperationType type, Computer computer) {
         this.name = name;
         this.priority = priority;
+        this.type = type;
         this.computer = computer;
+    }
+
+    public OperationType getType() {
+        return type;
     }
 
     public String getName() {

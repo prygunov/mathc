@@ -1,16 +1,23 @@
 package net.artux.mathc.ui;
 
-import net.artux.mathc.data.Solution;
+import net.artux.mathc.Application;
+import net.artux.mathc.Config;
+import net.artux.mathc.Operation;
+import net.artux.mathc.data.SolutionException;
 import net.artux.mathc.model.Expression;
 import net.artux.mathc.model.ExpressionPart;
+import net.artux.mathc.validation.ValidationException;
+import net.artux.mathc.validation.Validator;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 import javax.swing.*;
 
-public class InputForm extends JFrame implements DataChangeListener{
+public class InputForm extends JFrame {
 
     private JPanel root;
     private JTextField inputField;
@@ -20,119 +27,105 @@ public class InputForm extends JFrame implements DataChangeListener{
     private JButton btnClear;
     private JButton btnDeleteLast;
 
-    private static final String[] values = {"a","b","c","d","e","f","g","h","i","j","(",")"};
-    private static final String[] operations = {"+","-","*","/","sin","cos","^","exp"};
+    private final Application application;
+    private static final String[] symbols = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "(", ")"};
+    private static final Collection<Operation> operations = Config.getSupportedOperations();
 
-    private int leftists = 0;
-    private int rightists = 0;
     private Expression exp;
+    private ExpressionPart lastPart;
 
-    public InputForm (){
+    ActionListener symbolActionListener = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JButton but = (JButton) e.getSource();
+            ExpressionPart expressionPart = new ExpressionPart(but.getText(), false);
+            exp.getContent().add(expressionPart);
+            lastPart = expressionPart;
+            updateUI();
+        }
+    };
+
+    ActionListener funcActionListener = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JButton but = (JButton) e.getSource();
+            Operation operation = Config.supportedOperations.get(but.getText());
+            ExpressionPart expressionPart = new ExpressionPart(operation.getName(), true);
+            exp.getContent().add(expressionPart);
+            if (expressionPart.isFunction()){
+                expressionPart = new ExpressionPart("(", false);
+                exp.getContent().add(expressionPart);
+            }
+            lastPart = expressionPart;
+            updateUI();
+        }
+    };
+
+
+    public InputForm(Application application) {
+        this.application = application;
+
         setContentPane(root);
-        setSize(700, 650);
+        setSize(500, 350);
         setLocationByPlatform(true);
-        
-        
+        setTitle("Мастер функций");
+
         exp = new Expression(new ArrayList<>());
-        
-        GridLayout grid = new GridLayout(0,3);
+
+        GridLayout grid = new GridLayout(0, 3);
         valuesPanel.setLayout(grid);
-        GridLayout grid2 = new GridLayout(0,4);
+        GridLayout grid2 = new GridLayout(0, 3);
         operationsPanel.setLayout(grid2);
 
-        for(int i = 0;i < values.length;i++){
-            JButton but = new JButton(values[i]);
-
+        for (String value : symbols) {
+            JButton but = new JButton(value);
             valuesPanel.add(but);
-            but.addActionListener(e -> {
-                try {
-                    if(exp.getContent().size() ==0){ //Если элементов ещё нет, создаём первый
-                        if(!but.getText().equals(")"))
-                        exp.getContent().add(new ExpressionPart(but.getText(),false));
-                    }
-                    else {
-                        var expr = exp.getContent().get(exp.getContent().size() - 1); //берём ссылку на последний ExpressionPart
-
-                        if (expr.isCommand() || expr.getValue().equals("(")  || but.getText().equals(")")) { //Если левый элемент является символом, его необходимо заменить
-                            exp.getContent().add(new ExpressionPart(but.getText(), false));
-                        } else {
-                                expr.Replace(but.getText(), false);
-                                RemovingLeftersRighters(expr.getValue());//Счётчик левых и правых скоб
-                        }
-                    }
-                        inputField.setText(exp.toString());
-                        AddingLeftersRighters(but.getText());//Счётчик левых и правых скоб
-
-                } catch (Exception ex) {
-                    error(ex);
-                }
-            });
+            but.addActionListener(symbolActionListener);
         }
 
-        for(int i = 0; i < operations.length; i++){
-            JButton but = new JButton(operations[i]);
+        for (Operation operation : operations) {
+            JButton but = new JButton(operation.getName());
             operationsPanel.add(but);
-            but.addActionListener(e -> {
-                try {
-                    if(exp.getContent().size() ==0) return;
-                    var expr = exp.getContent().get(exp.getContent().size()-1);
-                    if(!expr.isCommand() && !expr.getValue().equals("(") ) {
-                        exp.getContent().add(new ExpressionPart(but.getText(), true));
-                    }
-                    else{
-                        RemovingLeftersRighters(expr.getValue());
-                        expr.Replace(but.getText(),true);
-                    }
-                    inputField.setText(exp.toString());
-                } catch (Exception ex) {
-                    error(ex);
-                }
-            });
+            but.addActionListener(funcActionListener);
         }
 
         btnAccept.addActionListener(e -> {
-            try{
-
-            }
-            catch (Exception ex) {
-                error(ex);
+            try {
+                if (Validator.isValid(exp)){
+                    application.getDataModel().setExpression(exp);
+                    setVisible(false);
+                }
+            } catch (ValidationException ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(),"Ошибка", JOptionPane.ERROR_MESSAGE);
             }
         });
         btnClear.addActionListener(e -> {
-            try{
-
-            }
-            catch (Exception ex) {
-                error(ex);
-            }
+            exp = new Expression(new ArrayList<>());
+            updateUI();
         });
         btnDeleteLast.addActionListener(e -> {
-            try{
-
-            }
-            catch (Exception ex) {
-                error(ex);
+            if (exp.getContent().size()>0) {
+                exp.getContent().remove(lastPart);
+                if (exp.getContent().size() != 0)
+                    lastPart = exp.getContent().get(exp.getContent().size() - 1);
+                else lastPart = null;
+                updateUI();
             }
         });
 
         valuesPanel.revalidate();
         valuesPanel.repaint();
     }
-    private void RemovingLeftersRighters(String text){
-        if(text.equals("(")) leftists--;
-        else if(text.equals(")")) rightists--;
-    }
-    private void AddingLeftersRighters(String text){
-        if(text.equals("(")) leftists++;
-        else if(text.equals(")")) rightists++;
-    }
-    @Override
-    public void updateSolution(Solution solution) {
 
+    void updateUI(){
+        inputField.setText(exp.toString());
     }
 
     @Override
-    public void error(Exception e) {
-
+    public void setVisible(boolean b) {
+        super.setVisible(b);
+        try {
+            exp = application.getDataModel().getExpression();
+        } catch (SolutionException ignored) {}
     }
 }

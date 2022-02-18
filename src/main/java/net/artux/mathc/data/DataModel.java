@@ -22,6 +22,10 @@ public class DataModel {
         dataChangeListener.updateSolution(solution);
     }
 
+    public Expression getExpression() throws SolutionException {
+        return getSolution().getExpression();
+    }
+
     public void tick() throws SolutionException {
         Solution solution = getSolution();
         solution.tick();
@@ -41,6 +45,7 @@ public class DataModel {
     }
 
     public void allTicks() throws SolutionException {
+        Solution solution = getSolution();
         while (!solution.isDone())
             solution.tick();
         dataChangeListener.updateSolution(solution);

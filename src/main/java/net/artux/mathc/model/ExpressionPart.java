@@ -1,5 +1,8 @@
 package net.artux.mathc.model;
 
+import net.artux.mathc.Config;
+import net.artux.mathc.OperationType;
+
 public class ExpressionPart {
 
     ExpressionPart(ExpressionPart part){
@@ -15,13 +18,14 @@ public class ExpressionPart {
     private String value;
     private boolean command;
 
-    public void Replace(String value,boolean command){
-        this.value = value;
-        this.command = command;
-    }
-
     public boolean isCommand() {
         return command;
+    }
+
+    public boolean isFunction(){
+        if (Config.supportedOperations.containsKey(getValue()))
+            return Config.supportedOperations.get(getValue()).getType() == OperationType.FUNCTION;
+        else return false;
     }
 
     public void setValue(String value) {

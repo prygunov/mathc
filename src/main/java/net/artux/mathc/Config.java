@@ -8,47 +8,47 @@ public class Config {
     public static HashMap<String, Operation> supportedOperations = new HashMap<>();
 
     static {
-        supportedOperations.put("+", new Operation("+", 1, stack -> {
+        supportedOperations.put("+", new Operation("+", 1, OperationType.OPERATOR, stack -> {
             double a = stack.pop();
             double b = stack.pop();
             return a+b;
         }));
 
-        supportedOperations.put("-",new Operation("-", 1, stack -> {
+        supportedOperations.put("-",new Operation("-", 1,OperationType.OPERATOR, stack -> {
             double a = stack.pop();
             double b = stack.pop();
             return a-b;
         }));
-        supportedOperations.put("*",new Operation("*", 2, stack -> {
+        supportedOperations.put("*",new Operation("*", 2, OperationType.OPERATOR,stack -> {
             double a = stack.pop();
             double b = stack.pop();
             return a*b;
         }));
-        supportedOperations.put("/",new Operation("/", 2, stack -> {
+        supportedOperations.put("/",new Operation("/", 2,OperationType.OPERATOR, stack -> {
             double a = stack.pop();
             double b = stack.pop();
             return b/a;
         }));
-        supportedOperations.put("^",new Operation("^", 3, stack -> {
+        supportedOperations.put("^",new Operation("^", 3,OperationType.OPERATOR, stack -> {
             double a = stack.pop();
             double b = stack.pop();
             return Math.pow(b, a);
         }));
-        supportedOperations.put("sin",new Operation("sin",4, stack -> {
+        supportedOperations.put("sin",new Operation("sin",4,OperationType.FUNCTION, stack -> {
             double a = stack.pop();
             return Math.sin(a);
         }));
-        supportedOperations.put("cos",new Operation("cos", 4, stack -> {
+        supportedOperations.put("cos",new Operation("cos", 4,OperationType.FUNCTION, stack -> {
             double a = stack.pop();
             return Math.cos(a);
         }));
 
-        supportedOperations.put("exp",new Operation("exp", 4, stack -> {
+        supportedOperations.put("exp",new Operation("exp", 4,OperationType.FUNCTION, stack -> {
             double a = stack.pop();
             return Math.exp(a);
         }));
 
-        supportedOperations.put("lg",new Operation("lg", 4, stack -> {
+        supportedOperations.put("lg",new Operation("lg", 4, OperationType.FUNCTION, stack -> {
             double a = stack.pop();
             return Math.log10(a);
         }));
