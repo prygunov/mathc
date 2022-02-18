@@ -33,5 +33,25 @@ public class CountSolutionTest {
         assertEquals(result, countSolution.getStack().peek());
     }
 
+    @org.junit.Test
+    public void complexTest() {
+        String in = "a^b*lg(c)";
+        Map<String, Double> values = new HashMap<>();
+        values.put("a", 4d);
+        values.put("b", 0.5d);
+        values.put("c", 10d);
+
+        Double result = 2d;
+
+        Expression expression = Expression.parseExpression(in);
+        Expression postData = ExpressionTest.result(expression);
+        CountSolution countSolution = new CountSolution(postData, values);
+        try {
+            while (!countSolution.isDone())
+                countSolution.tick();
+        }catch (Exception ignored){}
+
+        assertEquals(result, countSolution.getStack().peek());
+    }
 
 }

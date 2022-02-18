@@ -32,7 +32,7 @@ public class CountSolution {
         if (i < expression.getContent().size()) {
             ExpressionPart expressionPart = expression.getContent().get(i++);
             if (expressionPart.isCommand()) {
-                Operation operation = Config.getOperation(expressionPart.getValue());
+                Operation operation = Config.supportedOperations.get(expressionPart.getValue());
                 if (operation != null) {
                     stack.push(operation
                             .getComputer()

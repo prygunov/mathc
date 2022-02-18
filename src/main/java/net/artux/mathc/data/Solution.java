@@ -1,5 +1,6 @@
 package net.artux.mathc.data;
 
+import net.artux.mathc.Config;
 import net.artux.mathc.model.Expression;
 import net.artux.mathc.model.ExpressionPart;
 
@@ -29,21 +30,19 @@ public class Solution {
 
         if (i<expression.getContent().size()){
             ExpressionPart expressionPart = expression.getContent().get(i++);
-            if (expressionPart.isCommand()) {
-                switch (expressionPart.getValue()) {
-                    case "(" -> push(expressionPart); // запихуеваем в стек
-                    case ")" -> poop(); // достать из стека все, пока не встретим левую скобку
-                    default -> {
-                        if (!stack.isEmpty()) {
-                            int lastPriority = getPriority(stack.peek());
-                            int thisPriority = getPriority(expressionPart);
-                            if (lastPriority >= thisPriority) {// если приоритет последней операции в стеке больше или равен текущему
-                                poop(getPriority(expressionPart)); // (не смотри) // достаем в результат все пока не встретим
-                                push(expressionPart);
-                            } else push(expressionPart); // иначе запихуеваем в стек
-                        } else push(expressionPart); // запихуеваем в стек
-                    }
-                }
+            if (expressionPart.getValue().equals("(")){
+                push(expressionPart);
+            }else if (expressionPart.getValue().equals(")"))
+                poop();
+            else if (expressionPart.isCommand()) {
+                if (!stack.isEmpty()) {
+                    int lastPriority = getPriority(stack.peek());
+                    int thisPriority = getPriority(expressionPart);
+                    if (lastPriority >= thisPriority) {// если приоритет последней операции в стеке больше или равен текущему
+                        poop(getPriority(expressionPart)); // (не смотри) // достаем в результат все пока не встретим
+                        push(expressionPart);
+                    } else push(expressionPart); // иначе запихуеваем в стек
+                } else push(expressionPart); // запихуеваем в стек
             }else{
                 resultExpression.add(expressionPart);
             }
@@ -51,6 +50,8 @@ public class Solution {
             resultExpression.add(stack.pop());
             if(stack.isEmpty())
                 done = true;
+        }else {
+            done = true;
         }
     }
 
@@ -91,20 +92,6 @@ public class Solution {
     }
 
     int getPriority(ExpressionPart part){
-        return switch (part.getValue()) {
-            case "*", "/" -> 2;
-            case "sin", "cos", "exp" -> 3;
-            case "^" -> 4;
-            default -> 1;
-        };
-    }
-
-    double count(Map<String, Double> values) throws SolutionException{
-        if (isDone()){
-            i = 0;
-            return 0;
-        }
-
-        else throw new SolutionException("Выражение еще не преобразовано в постфиксную форму");
+        return Config.supportedOperations.get(part.getValue()).getPriority();
     }
 }

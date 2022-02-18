@@ -1,12 +1,15 @@
 package net.artux.mathc.model;
 
+import net.artux.mathc.Config;
+import net.artux.mathc.Operation;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class Expression {
 
-    private List<ExpressionPart> content;
+    private final List<ExpressionPart> content;
 
     public Expression(List<ExpressionPart> content) {
         this.content = content;
@@ -16,15 +19,21 @@ public class Expression {
         return content;
     }
 
-    public static String[] operations = {"+", "-", "*", "/", "^", "sin", "cos", "(", ")", "exp"};
+    public static List<String> operations = new ArrayList<>();
+    static {
+        for (Operation o :
+                Config.getSupportedOperations()) {
+            operations.add(o.getName());
+        }
+    }
 
     public static Expression parseExpression(String s){ // перевод строки в выражение
         List<ExpressionPart> parts = new ArrayList<>();
         StringBuilder partBuilder = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
             partBuilder.append(s.charAt(i));
-            if (Arrays.stream(operations).anyMatch(s1 -> s1.contains(partBuilder.toString()))) {
-                if (Arrays.stream(operations).anyMatch(s1 -> s1.equals(partBuilder.toString()))) {
+            if (operations.stream().anyMatch(s1 -> s1.contains(partBuilder.toString()))) {
+                if (operations.stream().anyMatch(s1 -> s1.equals(partBuilder.toString()))) {
                     parts.add(new ExpressionPart(partBuilder.toString(), true));
                     partBuilder.setLength(0);
                 }

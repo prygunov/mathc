@@ -1,60 +1,62 @@
 package net.artux.mathc;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 public class Config {
 
-    public static List<Operation> supportedOperations = new ArrayList<>();
+    public static HashMap<String, Operation> supportedOperations = new HashMap<>();
 
     static {
-        supportedOperations.add(new Operation("+", stack -> {
+        supportedOperations.put("+", new Operation("+", 1, stack -> {
             double a = stack.pop();
             double b = stack.pop();
             return a+b;
         }));
 
-        supportedOperations.add(new Operation("-", stack -> {
+        supportedOperations.put("-",new Operation("-", 1, stack -> {
             double a = stack.pop();
             double b = stack.pop();
             return a-b;
         }));
-        supportedOperations.add(new Operation("*", stack -> {
+        supportedOperations.put("*",new Operation("*", 2, stack -> {
             double a = stack.pop();
             double b = stack.pop();
             return a*b;
         }));
-        supportedOperations.add(new Operation("/", stack -> {
+        supportedOperations.put("/",new Operation("/", 2, stack -> {
             double a = stack.pop();
             double b = stack.pop();
-            return a/b;
+            return b/a;
         }));
-        supportedOperations.add(new Operation("^", stack -> {
+        supportedOperations.put("^",new Operation("^", 3, stack -> {
             double a = stack.pop();
             double b = stack.pop();
-            return Math.pow(a, b);
+            return Math.pow(b, a);
         }));
-        supportedOperations.add(new Operation("sin", stack -> {
+        supportedOperations.put("sin",new Operation("sin",4, stack -> {
             double a = stack.pop();
             return Math.sin(a);
         }));
-        supportedOperations.add(new Operation("cos", stack -> {
+        supportedOperations.put("cos",new Operation("cos", 4, stack -> {
             double a = stack.pop();
             return Math.cos(a);
         }));
 
-        supportedOperations.add(new Operation("cos", stack -> {
+        supportedOperations.put("exp",new Operation("exp", 4, stack -> {
             double a = stack.pop();
-            return Math.cos(a);
+            return Math.exp(a);
+        }));
+
+        supportedOperations.put("lg",new Operation("lg", 4, stack -> {
+            double a = stack.pop();
+            return Math.log10(a);
         }));
     }
 
-    public static Operation getOperation(String name) {
-        for (Operation o :
-                supportedOperations) {
-            if (o.getName().equals(name))
-                return o;
-        }
-        return null;
+    public static Collection<Operation> getSupportedOperations() {
+        return supportedOperations.values();
     }
 }

@@ -7,10 +7,12 @@ import java.util.Stack;
 public class Operation {
 
     private String name;
+    private int priority;
     private Computer computer;
 
-    public Operation(String name, Computer computer) {
+    public Operation(String name, int priority, Computer computer) {
         this.name = name;
+        this.priority = priority;
         this.computer = computer;
     }
 
@@ -20,6 +22,10 @@ public class Operation {
 
     public Computer getComputer() {
         return computer;
+    }
+
+    public int getPriority() {
+        return priority;
     }
 
     public interface Computer{
