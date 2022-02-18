@@ -33,10 +33,21 @@ public class MainForm extends JFrame implements DataChangeListener {
         list1.setModel(listModel);
         listPanel.setBackground(list1.getBackground());
 
-        DefaultTableModel tableModel = new DefaultTableModel();
+        DefaultTableModel tableModel = new DefaultTableModel(){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                if (column == 0)
+                    return false;
+                else
+                    return true;
+            }
+        };
         tableModel.addColumn("Переменные");
         tableModel.addColumn("Значения");
         table1.setModel(tableModel);
+        table1.getColumnName(1);
+        table1.getTableHeader().setReorderingAllowed(false);
+        table1.getTableHeader().setResizingAllowed(false);
 
         setContentPane(root);
         setSize(700, 650);
