@@ -1,7 +1,6 @@
 package net.artux.mathc.ui;
 
 import net.artux.mathc.Application;
-import net.artux.mathc.data.DataModel;
 import net.artux.mathc.data.Solution;
 import net.artux.mathc.data.SolutionException;
 import net.artux.mathc.model.Expression;
@@ -9,8 +8,6 @@ import net.artux.mathc.model.ExpressionPart;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Enumeration;
@@ -20,7 +17,7 @@ public class MainForm extends JFrame implements DataChangeListener {
     private JPanel root;
     private JTextField resultField;
     private JTextField expressionField;
-    private JList<String> list1;
+    private JList<ExpressionPart> list1;
     private JButton resultButton;
     private JButton autoButton;
     private JButton tickButton;
@@ -29,14 +26,14 @@ public class MainForm extends JFrame implements DataChangeListener {
     private JButton clearButton;
     private JPanel listPanel;
     private JTable table1;
-    private final DefaultListModel<String> listModel;
+    private final DefaultListModel<ExpressionPart> listModel;
     private final DefaultTableModel tableModel;
     private final Application application;
 
     public MainForm(Application application) {
         this.application = application;
 
-        listModel = new DefaultListModel<>();
+        listModel = new DefaultListModel<ExpressionPart>();
         list1.setModel(listModel);
         listPanel.setBackground(list1.getBackground());
 
@@ -115,17 +112,27 @@ public class MainForm extends JFrame implements DataChangeListener {
         });
     }
 
-
+    Solution previousSolution;
     @Override
     public void updateSolution(Solution solution) {
-        listModel.removeAllElements();
         if (solution != null) {
+            if (previousSolution!=solution)
+                listModel.removeAllElements();
+
             expressionField.setText(solution.getExpression().toString());
+
+            int selectedIndex = -1;
             Enumeration<ExpressionPart> expressionPartEnumeration = solution.getStack().elements();
             while (expressionPartEnumeration.hasMoreElements()) {
-                listModel.add(0, expressionPartEnumeration.nextElement().getValue());
+                ExpressionPart expressionPart = expressionPartEnumeration.nextElement();
+                if(!listModel.contains(expressionPart)){
+                    listModel.add(0, expressionPart);
+                }
+                if (!expressionPartEnumeration.hasMoreElements())
+                    selectedIndex = listModel.indexOf(expressionPart);
+
             }
-            list1.setSelectedIndex(0);
+            list1.setSelectedIndex(selectedIndex);
             list1.setEnabled(false);
 
             Expression e = new Expression(solution.getResultExpression());
@@ -137,8 +144,11 @@ public class MainForm extends JFrame implements DataChangeListener {
                     if (!part.isCommand())
                         tableModel.addRow(row);
                 }
+                list1.clearSelection();
             }
+            previousSolution = solution;
         } else {
+            listModel.removeAllElements();
             expressionField.setText("Кликните для ввода");
             resultField.setText("");
         }
