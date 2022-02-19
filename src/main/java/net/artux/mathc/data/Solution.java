@@ -28,24 +28,24 @@ public class Solution {
             throw new SolutionException("Выражение уже преобразовано");
 
         if (i<expression.getContent().size()){
-            ExpressionPart expressionPart = expression.getContent().get(i++);
+            ExpressionPart expressionPart = expression.getContent().get(i++); // берем часть выражения
             if (expressionPart.getValue().equals("(")){
-                push(expressionPart);
+                push(expressionPart); // если левая скобка - в стек
             }else if (expressionPart.getValue().equals(")"))
-                pop();
+                pop(); // если правая скобка - выгружаем стек в очередь
             else if (expressionPart.isCommand()) {
-                if (!stack.isEmpty() && !stack.peek().getValue().equals("(")) {
+                if (!stack.isEmpty() && !stack.peek().getValue().equals("(")) { // сработает если стек не пуст и последний элемент не (
                     int lastPriority = getPriority(stack.peek());
                     int thisPriority = getPriority(expressionPart);
                     if (lastPriority >= thisPriority) {// если приоритет последней операции в стеке больше или равен текущему
-                        pop(getPriority(expressionPart)); // (не смотри) // достаем в результат все пока не встретим
+                        pop(getPriority(expressionPart)); // выгружаем пока не встретим меньший приоритет
                     }
                 }
                 push(expressionPart);
             }else{
-                resultExpression.add(expressionPart);
+                resultExpression.add(expressionPart); // если это переменная - с чистой совестью добавляем в очередь
             }
-        }else if (!stack.isEmpty()){
+        }else if (!stack.isEmpty()){ // перебрали все части выражения, приступаем к выгрузке стека в очередь
             resultExpression.add(stack.pop());
             if(stack.isEmpty())
                 done = true;
@@ -62,6 +62,7 @@ public class Solution {
         return resultExpression;
     }
 
+    //выгрузка до первой скобки
     private void pop() {
         int size = stack.size();
         for (int i = 0; i < size; i++) {

@@ -94,7 +94,8 @@ public class InputForm extends JFrame {
                 if (Validator.isValid(exp)){
                     application.getDataModel().setExpression(exp);
                     setVisible(false);
-                }
+                }else
+                    JOptionPane.showMessageDialog(this, "Выражение не задано","Ошибка", JOptionPane.ERROR_MESSAGE);
             } catch (ValidationException ex) {
                 JOptionPane.showMessageDialog(this, ex.getMessage(),"Ошибка", JOptionPane.ERROR_MESSAGE);
             }
@@ -126,6 +127,7 @@ public class InputForm extends JFrame {
         super.setVisible(b);
         try {
             exp = application.getDataModel().getExpression();
+            updateUI();
         } catch (SolutionException ignored) {}
     }
 }

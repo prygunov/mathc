@@ -10,46 +10,19 @@ public class Validator {
 
     static List<Catcher> errorCatchers = new ArrayList<>();
     static {
-        errorCatchers.add(new Catcher("Две скобки подряд", new ErrorChecker() {
-            @Override
-            public boolean error(ExpressionPart part1, ExpressionPart part2) {
-                return part1.getValue().equals("(") && part2.getValue().equals(")");
-            }
+        errorCatchers.add(new Catcher("Две скобки подряд", (part1, part2) -> part1.getValue().equals("(") && part2.getValue().equals(")")));
+        errorCatchers.add(new Catcher("Две операции подряд", (part1, part2) -> part1.isCommand() && part2.isCommand() && !part2.isFunction()));
+        errorCatchers.add(new Catcher("После функции отсутствует скобка", (part1, part2) -> part1.isFunction() && !part2.getValue().equals("(")));
+        errorCatchers.add(new Catcher("После открывающей скобки операция", (part1, part2) -> part1.getValue().equals("(") && part2.isCommand() && !part2.isFunction()));
+        errorCatchers.add(new Catcher("Отсутствует операция", (part1, part2) -> {
+            boolean isBrackets = part1.getValue().equals("(") || part2.getValue().equals(")");
+            return !part1.isCommand() && !part2.isCommand() && !isBrackets;
         }));
-        errorCatchers.add(new Catcher("Две операции подряд", new ErrorChecker() {
-            @Override
-            public boolean error(ExpressionPart part1, ExpressionPart part2) {
-                return part1.isCommand() && part2.isCommand() && !part2.isFunction();
-            }
-        }));
-        errorCatchers.add(new Catcher("После функции отсутствует скобка",new ErrorChecker() {
-            @Override
-            public boolean error(ExpressionPart part1, ExpressionPart part2) {
-                return part1.isFunction() && !part2.getValue().equals("(");
-            }
-        }));
-        errorCatchers.add(new Catcher("После открывающей скобки операция",new ErrorChecker() {
-            @Override
-            public boolean error(ExpressionPart part1, ExpressionPart part2) {
-                return part1.getValue().equals("(") && part2.isCommand() && !part2.isFunction();
-            }
-        }));
-        errorCatchers.add(new Catcher("Отсутствует операция",new ErrorChecker() {
-            @Override
-            public boolean error(ExpressionPart part1, ExpressionPart part2) {
-                boolean isBrackets = part1.getValue().equals("(") || part2.getValue().equals(")");
-                return !part1.isCommand() && !part2.isCommand() && !isBrackets;
-            }
-        }));
-        errorCatchers.add(new Catcher("Отсутствует операция перед функцией",new ErrorChecker() {
-            @Override
-            public boolean error(ExpressionPart part1, ExpressionPart part2) {
-                boolean isBracket = part1.getValue().equals("(");
-                return !part1.isCommand() && !isBracket && part2.isCommand() && part2.isFunction();
-            }
+        errorCatchers.add(new Catcher("Отсутствует операция перед функцией", (part1, part2) -> {
+            boolean isBracket = part1.getValue().equals("(");
+            return !part1.isCommand() && !isBracket && part2.isCommand() && part2.isFunction();
         }));
     }
-
 
     public static boolean isValid(Expression expression) throws ValidationException {
         if (expression.getContent().size()>0) {
@@ -96,9 +69,7 @@ public class Validator {
     }
 
     interface ErrorChecker {
-
         boolean error(ExpressionPart part1, ExpressionPart part2);
-
     }
 
 }
