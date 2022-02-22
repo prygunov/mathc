@@ -63,7 +63,13 @@ public class Solution {
         return stack;
     }
 
-    public List<ExpressionPart> getResultExpression() {
+    public Expression getResultExpression() throws SolutionException{
+        if (isDone())
+            return new Expression(resultExpression);
+        else throw new SolutionException("Выражение еще не преобразовано");
+    }
+
+    public List<ExpressionPart> getResultParts() {
         return resultExpression;
     }
 

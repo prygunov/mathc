@@ -5,12 +5,19 @@ import net.artux.mathc.data.Solution;
 import net.artux.mathc.data.SolutionException;
 import net.artux.mathc.model.Expression;
 import net.artux.mathc.model.ExpressionPart;
+import net.artux.mathc.util.Stack;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainForm extends JFrame implements DataChangeListener {
 
@@ -26,16 +33,20 @@ public class MainForm extends JFrame implements DataChangeListener {
     private JButton clearButton;
     private JPanel listPanel;
     private JTable table1;
-    private final DefaultListModel<ExpressionPart> listModel;
+    private JCheckBox resultCheckBox;
+    private JTextField resultValueTextField;
+    private JButton setValuesButton;
+    private final DefaultListModel listModel;
     private final DefaultTableModel tableModel;
     private final Application application;
 
     public MainForm(Application application) {
         this.application = application;
 
-        listModel = new DefaultListModel<ExpressionPart>();
+        listModel = new DefaultListModel<>();
         list1.setModel(listModel);
         listPanel.setBackground(list1.getBackground());
+        list1.setEnabled(false);
 
         tableModel = new DefaultTableModel() {
             @Override
@@ -60,7 +71,7 @@ public class MainForm extends JFrame implements DataChangeListener {
         resultButton.addActionListener(e -> {
             try {
                 application.getDataModel().allTicks();
-            } catch (SolutionException ex) {
+            } catch (Exception ex) {
                 error(ex);
             }
         });
@@ -80,6 +91,9 @@ public class MainForm extends JFrame implements DataChangeListener {
                 error(ex);
             }
         });
+
+        setValuesButton.addActionListener(e -> application.getDataModel().setValues(getValues()));
+        resultCheckBox.addChangeListener(e -> application.getDataModel().setCountResult(resultCheckBox.isSelected()));
 
         timeSlider.addChangeListener(e -> tickTime.setText("Время такта: " + (timeSlider.getValue() / 100f) + " с."));
         clearButton.addActionListener(e -> application.getDataModel().clear());
@@ -112,32 +126,44 @@ public class MainForm extends JFrame implements DataChangeListener {
         });
     }
 
-    @Override
-    public void updateSolution(Solution solution) {
-        listModel.removeAllElements();
-        if (solution != null) {
-            expressionField.setText(solution.getExpression().toString());
-            Enumeration<ExpressionPart> expressionPartEnumeration = solution.getStack().elements();
-            while (expressionPartEnumeration.hasMoreElements()) {
-                listModel.add(0, expressionPartEnumeration.nextElement());
-            }
-            list1.setSelectedIndex(solution.getStack().getElementCount()-1 - solution.getStack().getPeekIndex());
-            list1.setEnabled(false);
-
-            Expression e = new Expression(solution.getResultExpression());
-            resultField.setText(e.toString());
-            if (solution.isDone()) {
-                tableModel.getDataVector().removeAllElements();
-                for (ExpressionPart part : e.getContent()) {
-                    Object[] row = {part.getValue(), ""};
-                    if (!part.isCommand())
-                        tableModel.addRow(row);
-                }
-            }
-        } else {
-            expressionField.setText("Кликните для ввода");
-            resultField.setText("");
+    Map<String, Double> getValues() throws RuntimeException {
+        HashMap<String, Double> values = new HashMap<>();
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            values.put((String) tableModel.getValueAt(i, 0), Double.parseDouble((String) tableModel.getValueAt(i, 1)));
         }
+        return values;
+    }
+
+    @Override
+    public void updateInputExpression(Expression expression) {
+        expressionField.setText(expression.toString());
+        tableModel.getDataVector().removeAllElements();
+        for (ExpressionPart part : expression.getContent()) {
+            Object[] row = {part.getValue(), ""};
+            if (!part.isCommand() && !part.getValue().equals(")")
+                    && !part.getValue().equals("("))
+                tableModel.addRow(row);
+        }
+    }
+
+    @Override
+    public void updatePostfix(String s) {
+        resultField.setText(s);
+    }
+
+    @Override
+    public void updateResult(Double d) {
+        resultValueTextField.setText(String.valueOf(d));
+    }
+
+    @Override
+    public void updateStack(Stack stack) {
+        listModel.removeAllElements();
+        Enumeration expressionPartEnumeration = stack.elements();
+        while (expressionPartEnumeration.hasMoreElements()) {
+            listModel.add(0, expressionPartEnumeration.nextElement());
+        }
+        list1.setSelectedIndex(stack.getElementCount() - 1 - stack.getPeekIndex());
     }
 
     @Override

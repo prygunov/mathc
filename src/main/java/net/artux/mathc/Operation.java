@@ -1,15 +1,13 @@
 package net.artux.mathc;
 
-import net.artux.mathc.data.SolutionException;
-
-import java.util.Stack;
+import net.artux.mathc.util.Stack;
 
 public class Operation {
 
-    private String name;
-    private int priority;
-    private OperationType type;
-    private Computer computer;
+    private final String name;
+    private final int priority;
+    private final OperationType type;
+    private final Computer computer;
 
     public Operation(String name, int priority, OperationType type, Computer computer) {
         this.name = name;

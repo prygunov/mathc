@@ -7,72 +7,72 @@ import static org.junit.Assert.assertEquals;
 public class ExpressionTest {
 
     @org.junit.Test
-    public void testPostfix() {
+    public void testPostfix() throws SolutionException {
         String in = "5*8*(2+9)+(7-5+8-9*(5*5)+5)";
         String post = "58*29+*75-8+955**-5++";
 
-        Expression expression = Expression.parseExpression(in);
+        Expression expression = TestHelper.parseExpression(in);
         Expression postData = result(expression);
 
         assertEquals(post, postData.toString());
     }
 
     @org.junit.Test
-    public void testSecondPostfix() {
+    public void testSecondPostfix() throws SolutionException {
         String in = "5*8/(2+9)";
         String post = "58*29+/";
 
-        Expression expression = Expression.parseExpression(in);
+        Expression expression = TestHelper.parseExpression(in);
         Expression postData = result(expression);
 
         assertEquals(post, postData.toString());
     }
 
     @org.junit.Test
-    public void testThirdPostfix() {
+    public void testThirdPostfix() throws SolutionException {
         String in = "a+b*sin(c-d/e)";
         String post = "abcde/-sin*+";
 
-        Expression expression = Expression.parseExpression(in);
+        Expression expression = TestHelper.parseExpression(in);
         Expression postData = result(expression);
 
         assertEquals(post, postData.toString());
     }
 
     @org.junit.Test
-    public void testFourthPostfix() {
+    public void testFourthPostfix() throws SolutionException {
         String in = "exp(sin(a+b/(c-d)))";
         String post = "abcd-/+sinexp";
 
-        Expression expression = Expression.parseExpression(in);
+        Expression expression = TestHelper.parseExpression(in);
         Expression postData = result(expression);
 
         assertEquals(post, postData.toString());
     }
 
     @org.junit.Test
-    public void testFifthPostfix() {
+    public void testFifthPostfix() throws SolutionException {
         String in = "cos(f^sin(b))";
         String post = "fbsin^cos";
 
-        Expression expression = Expression.parseExpression(in);
+        Expression expression = TestHelper.parseExpression(in);
         Expression postData = result(expression);
 
         assertEquals(post, postData.toString());
     }
 
     @org.junit.Test
-    public void testSixthPostfix() {
+    public void testSixthPostfix() throws SolutionException {
         String in = "cos(e^h*d+c)";
         String post = "eh^d*c+cos";
 
-        Expression expression = Expression.parseExpression(in);
+        Expression expression = TestHelper.parseExpression(in);
         Expression postData = result(expression);
 
         assertEquals(post, postData.toString());
     }
 
-    public static Expression result(Expression expression) {
+    public static Expression result(Expression expression) throws SolutionException {
         Solution solution = new Solution(expression);
         try {
             while (!solution.isDone())
@@ -80,6 +80,6 @@ public class ExpressionTest {
         } catch (SolutionException e) {
             e.printStackTrace();
         }
-        return new Expression(solution.getResultExpression());
+        return solution.getResultExpression();
     }
 }

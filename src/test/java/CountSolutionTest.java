@@ -12,7 +12,7 @@ public class CountSolutionTest {
 
 
     @org.junit.Test
-    public void simpleTest() {
+    public void simpleTest() throws SolutionException {
         String in = "a*b/(c+d)";
         Map<String, Double> values = new HashMap<>();
         values.put("a", 4d);
@@ -22,7 +22,7 @@ public class CountSolutionTest {
 
         Double result = 1.25d;
 
-        Expression expression = Expression.parseExpression(in);
+        Expression expression = TestHelper.parseExpression(in);
         Expression postData = ExpressionTest.result(expression);
         CountSolution countSolution = new CountSolution(postData, values);
         try {
@@ -34,7 +34,7 @@ public class CountSolutionTest {
     }
 
     @org.junit.Test
-    public void complexTest() {
+    public void complexTest() throws SolutionException {
         String in = "a^b*lg(c)";
         Map<String, Double> values = new HashMap<>();
         values.put("a", 4d);
@@ -43,7 +43,7 @@ public class CountSolutionTest {
 
         Double result = 2d;
 
-        Expression expression = Expression.parseExpression(in);
+        Expression expression =  TestHelper.parseExpression(in);
         Expression postData = ExpressionTest.result(expression);
         CountSolution countSolution = new CountSolution(postData, values);
         try {

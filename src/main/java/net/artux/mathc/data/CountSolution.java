@@ -4,11 +4,9 @@ import net.artux.mathc.Config;
 import net.artux.mathc.Operation;
 import net.artux.mathc.model.Expression;
 import net.artux.mathc.model.ExpressionPart;
+import net.artux.mathc.util.Stack;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 public class CountSolution {
 
@@ -55,5 +53,11 @@ public class CountSolution {
 
     public boolean isDone() {
         return done;
+    }
+
+    public String getPostfixWithSelection(){
+        StringBuilder builder = new StringBuilder(expression.toString());
+        builder.insert(i, '|');
+        return builder.toString();
     }
 }

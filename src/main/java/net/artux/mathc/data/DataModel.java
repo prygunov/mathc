@@ -1,16 +1,22 @@
 package net.artux.mathc.data;
 
 import net.artux.mathc.model.Expression;
+import net.artux.mathc.model.ExpressionPart;
 import net.artux.mathc.ui.DataChangeListener;
 
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class DataModel {
 
     private Solution solution;
+    private CountSolution countSolution;
+    private boolean countResult;
     private final DataChangeListener dataChangeListener;
     private final Timer timer;
+
+    private Map<String, Double> values;
 
     public DataModel(DataChangeListener dataChangeListener) {
         this.dataChangeListener = dataChangeListener;
@@ -19,36 +25,71 @@ public class DataModel {
 
     public void setExpression(Expression expression) {
         solution = new Solution(expression);
-        dataChangeListener.updateSolution(solution);
+        countSolution = null;
+        dataChangeListener.updateInputExpression(expression);
+        updateSolution(solution);
     }
 
     public Expression getExpression() throws SolutionException {
         return getSolution().getExpression();
     }
 
-    public void tick() throws SolutionException {
+    public void setValues(Map<String, Double> values) {
+        this.values = values;
+    }
+
+    private void updateSolution(Solution solution) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (ExpressionPart part : solution.getResultParts()) {
+            stringBuilder.append(part);
+        }
+        dataChangeListener.updatePostfix(stringBuilder.toString());
+        dataChangeListener.updateStack(solution.getStack());
+    }
+
+    public void setCountResult(boolean countResult) {
+        this.countResult = countResult;
+    }
+
+    public void tick() throws Exception {
         Solution solution = getSolution();
-        solution.tick();
-        dataChangeListener.updateSolution(solution);
+        if (!solution.isDone()) {
+            solution.tick();
+            updateSolution(solution);
+        } else if (countSolution == null && countResult) {
+            if (values == null)
+                throw new SolutionException("Значения не заданы");
+            countSolution = new CountSolution(solution.getResultExpression(), values);
+        } else if (countResult && !countSolution.isDone()) {
+            countSolution.tick();
+            dataChangeListener.updateStack(countSolution.getStack());
+            dataChangeListener.updatePostfix(countSolution.getPostfixWithSelection());
+            if (countSolution.isDone())
+                dataChangeListener.updateResult(countSolution.getStack().get(0));
+        } else dataChangeListener.error(new SolutionException("Преобразование завершено"));
     }
 
     public void delayTicks(long tickTime) throws SolutionException {
-        Solution solution = getSolution();
-        if (!solution.isDone())
-            timer.scheduleAtFixedRate(new Repeater(getSolution(), dataChangeListener), tickTime, tickTime);
+        if (!isDone())
+            timer.scheduleAtFixedRate(new Repeater(dataChangeListener), tickTime, tickTime);
         else throw new SolutionException("Выражение уже преобразовано");
     }
 
-    public void stopTicks(){
+    public void stopTicks() {
         timer.cancel();
         timer.purge();
     }
 
-    public void allTicks() throws SolutionException {
-        Solution solution = getSolution();
-        while (!solution.isDone())
-            solution.tick();
-        dataChangeListener.updateSolution(solution);
+    public void allTicks() throws Exception {
+        while (!isDone())
+            tick();
+        if (countResult) {
+            dataChangeListener.updateStack(countSolution.getStack());
+            dataChangeListener.updatePostfix(countSolution.getPostfixWithSelection());
+            if (countSolution.isDone())
+                dataChangeListener.updateResult(countSolution.getStack().get(0));
+        }else updateSolution(solution);
+
     }
 
     private Solution getSolution() throws SolutionException {
@@ -59,30 +100,37 @@ public class DataModel {
 
     public void clear() {
         setExpression(solution.getExpression());
-        dataChangeListener.updateSolution(solution);
+        updateSolution(solution);
     }
 
-    static class Repeater extends TimerTask {
+    class Repeater extends TimerTask {
 
-        private final Solution solution;
         private final DataChangeListener dataChangeListener;
 
-        public Repeater(Solution solution, DataChangeListener dataChangeListener) {
-            this.solution = solution;
+        public Repeater(DataChangeListener dataChangeListener) {
             this.dataChangeListener = dataChangeListener;
         }
 
         @Override
         public void run() {
-            if (!solution.isDone()) {
-                try {
-                    solution.tick();
-                    dataChangeListener.updateSolution(solution);
-                } catch (SolutionException e) {
-                    dataChangeListener.error(e);
-                }
+            try {
+                if (!isDone()) {
+                    tick();
+                }else stopTicks();
+            } catch (Exception e) {
+                dataChangeListener.error(e);
+                stopTicks();
             }
         }
+    }
+
+    private boolean isDone() throws SolutionException {
+        if (!getSolution().isDone())
+            return false;
+        if (countResult && countSolution == null)
+            return false;
+        return countResult && countSolution.isDone();
+
     }
 
 }
