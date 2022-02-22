@@ -112,27 +112,16 @@ public class MainForm extends JFrame implements DataChangeListener {
         });
     }
 
-    Solution previousSolution;
     @Override
     public void updateSolution(Solution solution) {
+        listModel.removeAllElements();
         if (solution != null) {
-            if (previousSolution!=solution)
-                listModel.removeAllElements();
-
             expressionField.setText(solution.getExpression().toString());
-
-            int selectedIndex = -1;
             Enumeration<ExpressionPart> expressionPartEnumeration = solution.getStack().elements();
             while (expressionPartEnumeration.hasMoreElements()) {
-                ExpressionPart expressionPart = expressionPartEnumeration.nextElement();
-                if(!listModel.contains(expressionPart)){
-                    listModel.add(0, expressionPart);
-                }
-                if (!expressionPartEnumeration.hasMoreElements())
-                    selectedIndex = listModel.indexOf(expressionPart);
-
+                listModel.add(0, expressionPartEnumeration.nextElement());
             }
-            list1.setSelectedIndex(selectedIndex);
+            list1.setSelectedIndex(solution.getStack().getElementCount()-1 - solution.getStack().getPeekIndex());
             list1.setEnabled(false);
 
             Expression e = new Expression(solution.getResultExpression());
@@ -144,11 +133,8 @@ public class MainForm extends JFrame implements DataChangeListener {
                     if (!part.isCommand())
                         tableModel.addRow(row);
                 }
-                list1.clearSelection();
             }
-            previousSolution = solution;
         } else {
-            listModel.removeAllElements();
             expressionField.setText("Кликните для ввода");
             resultField.setText("");
         }

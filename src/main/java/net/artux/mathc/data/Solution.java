@@ -3,10 +3,10 @@ package net.artux.mathc.data;
 import net.artux.mathc.Config;
 import net.artux.mathc.model.Expression;
 import net.artux.mathc.model.ExpressionPart;
+import net.artux.mathc.util.Stack;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 public class Solution {
 
@@ -39,11 +39,14 @@ public class Solution {
                     int lastPriority = getPriority(stack.peek());
                     int thisPriority = getPriority(expressionPart);
                     if (lastPriority >= thisPriority) {// если приоритет последней операции в стеке больше или равен текущему
-                        if (pop(getPriority(expressionPart)))
+                        if (pop(getPriority(expressionPart))) {
                             i--; // выгружаем пока не встретим меньший приоритет
-                    }
-                }
-                push(expressionPart);
+                        }else{
+                            push(expressionPart);
+                        }
+                    } else push(expressionPart);
+                }else push(expressionPart);
+
             } else {
                 resultExpression.add(expressionPart); // если это переменная - с чистой совестью добавляем в очередь
             }
