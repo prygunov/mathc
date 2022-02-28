@@ -10,10 +10,11 @@ public class Validator {
 
     static List<Catcher> errorCatchers = new ArrayList<>();
     static {
-        errorCatchers.add(new Catcher("Две скобки подряд", (part1, part2) -> part1.getValue().equals("(") && part2.getValue().equals(")")));
+        errorCatchers.add(new Catcher("Пустое скобочное выражение", (part1, part2) -> part1.getValue().equals("(") && part2.getValue().equals(")")));
         errorCatchers.add(new Catcher("Две операции подряд", (part1, part2) -> part1.isCommand() && part2.isCommand() && !part2.isFunction()));
         errorCatchers.add(new Catcher("После функции отсутствует скобка", (part1, part2) -> part1.isFunction() && !part2.getValue().equals("(")));
         errorCatchers.add(new Catcher("После открывающей скобки операция", (part1, part2) -> part1.getValue().equals("(") && part2.isCommand() && !part2.isFunction()));
+        errorCatchers.add(new Catcher("Перед закрывающей скобкой операция или функция", (part1, part2) -> part2.getValue().equals(")") && (part1.isCommand() || part1.isFunction())));
         errorCatchers.add(new Catcher("Отсутствует операция", (part1, part2) -> {
             boolean isBrackets = part1.getValue().equals("(") || part2.getValue().equals(")");
             return !part1.isCommand() && !part2.isCommand() && !isBrackets;
@@ -25,7 +26,7 @@ public class Validator {
     }
 
     public static boolean isValid(Expression expression) throws ValidationException {
-        if (expression.getContent().size()>0) {
+        if (expression.getContent().size()>2) {
             int leftBrackets = 0;
             int rightBrackets = 0;
 
@@ -55,7 +56,7 @@ public class Validator {
 
             return true;
         }
-        return false;
+        else throw new ValidationException("Выражение слишком короткое");
     }
 
     static class Catcher {

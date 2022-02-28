@@ -15,6 +15,8 @@ public class DataModel {
     private boolean countResult;
     private final DataChangeListener dataChangeListener;
     private final Timer timer;
+    private boolean isTimerRunning;
+    private TimerTask lastTask;
 
     private Map<String, Double> values;
 
@@ -70,14 +72,19 @@ public class DataModel {
     }
 
     public void delayTicks(long tickTime) throws SolutionException {
-        if (!isDone())
-            timer.scheduleAtFixedRate(new Repeater(dataChangeListener), tickTime, tickTime);
+        if (isTimerRunning)
+            stopTicks();
+        else if (!isDone()) {
+            isTimerRunning = true;
+            lastTask = new Repeater(dataChangeListener);
+            timer.scheduleAtFixedRate(lastTask, tickTime, tickTime);
+        }
         else throw new SolutionException("Выражение уже преобразовано");
     }
 
     public void stopTicks() {
-        timer.cancel();
-        timer.purge();
+        isTimerRunning = false;
+        lastTask.cancel();
     }
 
     public void allTicks() throws Exception {
@@ -127,10 +134,13 @@ public class DataModel {
     private boolean isDone() throws SolutionException {
         if (!getSolution().isDone())
             return false;
-        if (countResult && countSolution == null)
-            return false;
-        return countResult && countSolution.isDone();
-
+        else {
+            if (countResult) {
+                if (countSolution == null)
+                    return false;
+                return countSolution.isDone();
+            }else return true;
+        }
     }
 
 }
