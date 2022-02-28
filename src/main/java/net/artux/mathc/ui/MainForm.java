@@ -92,7 +92,14 @@ public class MainForm extends JFrame implements DataChangeListener {
             }
         });
 
-        setValuesButton.addActionListener(e -> application.getDataModel().setValues(getValues()));
+        setValuesButton.addActionListener(e -> {
+            try {
+                application.getDataModel().setValues(getValues());
+            } catch (Exception ex) {
+                error(ex);
+            }
+
+        });
         resultCheckBox.addChangeListener(e -> application.getDataModel().setCountResult(resultCheckBox.isSelected()));
 
         timeSlider.addChangeListener(e -> tickTime.setText("Время такта: " + (timeSlider.getValue() / 100f) + " с."));
@@ -126,7 +133,7 @@ public class MainForm extends JFrame implements DataChangeListener {
         });
     }
 
-    Map<String, Double> getValues() throws RuntimeException {
+    Map<String, Double> getValues() {
         HashMap<String, Double> values = new HashMap<>();
         for (int i = 0; i < tableModel.getRowCount(); i++) {
             values.put((String) tableModel.getValueAt(i, 0), Double.parseDouble((String) tableModel.getValueAt(i, 1)));
@@ -168,6 +175,7 @@ public class MainForm extends JFrame implements DataChangeListener {
 
     @Override
     public void error(Exception e) {
-        JOptionPane.showMessageDialog(this, e.getMessage());
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, e.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
     }
 }
