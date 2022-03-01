@@ -10,7 +10,12 @@ import net.artux.mathc.util.Stack;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -35,7 +40,6 @@ public class MainForm extends JFrame implements DataChangeListener {
     private JTable table1;
     private JCheckBox resultCheckBox;
     private JTextField resultValueTextField;
-    private JButton setValuesButton;
     private final DefaultListModel listModel;
     private final DefaultTableModel tableModel;
     private final Application application;
@@ -87,20 +91,36 @@ public class MainForm extends JFrame implements DataChangeListener {
         autoButton.addActionListener(e -> {
             try {
                 application.getDataModel().delayTicks(timeSlider.getValue() * 10L);
+                if (application.getDataModel().isTimerRunning())
+                    autoButton.setText("Остановить");
+                else
+                    autoButton.setText("Автоматически");
             } catch (SolutionException ex) {
                 error(ex);
             }
         });
 
-        setValuesButton.addActionListener(e -> {
-            try {
-                application.getDataModel().setValues(getValues());
-            } catch (Exception ex) {
-                error(ex);
-            }
+        resultCheckBox.addChangeListener(e ->{
+            application.getDataModel().setCountResult(resultCheckBox.isSelected());
+            table1.setEnabled(resultCheckBox.isSelected());
+        } );
 
+        tableModel.addTableModelListener(e -> {
+            if (e.getType() == TableModelEvent.UPDATE){
+                String key = (String) tableModel.getValueAt(e.getFirstRow(), 0);
+                Object value = tableModel.getValueAt(e.getFirstRow(), 1);
+                if (value instanceof Double)
+                    application.getDataModel().setValue(key, (Double) value);
+                else try {
+                    Double d = Double.parseDouble(String.valueOf(value));
+                    application.getDataModel().setValue(key, d);
+                }catch (NumberFormatException numberFormatException){
+                    error(new NumberFormatException("Не удалось преобразовать " + value));
+                    tableModel.setValueAt(application.getDataModel().getValues().get(key), e.getFirstRow(), 1);
+                }
+
+            }
         });
-        resultCheckBox.addChangeListener(e -> application.getDataModel().setCountResult(resultCheckBox.isSelected()));
 
         timeSlider.addChangeListener(e -> tickTime.setText("Время такта: " + (timeSlider.getValue() / 100f) + " с."));
         clearButton.addActionListener(e -> application.getDataModel().clear());
@@ -133,23 +153,13 @@ public class MainForm extends JFrame implements DataChangeListener {
         });
     }
 
-    Map<String, Double> getValues() {
-        HashMap<String, Double> values = new HashMap<>();
-        for (int i = 0; i < tableModel.getRowCount(); i++) {
-            values.put((String) tableModel.getValueAt(i, 0), Double.parseDouble((String) tableModel.getValueAt(i, 1)));
-        }
-        return values;
-    }
-
     @Override
     public void updateInputExpression(Expression expression) {
         expressionField.setText(expression.toString());
         tableModel.getDataVector().removeAllElements();
-        for (ExpressionPart part : expression.getContent()) {
-            Object[] row = {part.getValue(), ""};
-            if (!part.isCommand() && !part.getValue().equals(")")
-                    && !part.getValue().equals("("))
-                tableModel.addRow(row);
+        for (Map.Entry<String, Double> entry : application.getDataModel().getValues().entrySet()) {
+            Object[] row = {entry.getKey(), entry.getValue()};
+            tableModel.addRow(row);
         }
     }
 

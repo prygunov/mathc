@@ -15,8 +15,8 @@ public class Config {
         }));
 
         supportedOperations.put("-",new Operation("-", 1,OperationType.OPERATOR, stack -> {
-            double a = stack.pop();
             double b = stack.pop();
+            double a = stack.pop();
             return a-b;
         }));
         supportedOperations.put("*",new Operation("*", 2, OperationType.OPERATOR,stack -> {
@@ -25,14 +25,14 @@ public class Config {
             return a*b;
         }));
         supportedOperations.put("/",new Operation("/", 2,OperationType.OPERATOR, stack -> {
-            double a = stack.pop();
             double b = stack.pop();
-            return b/a;
+            double a = stack.pop();
+            return a/b;
         }));
         supportedOperations.put("^",new Operation("^", 3,OperationType.OPERATOR, stack -> {
-            double a = stack.pop();
             double b = stack.pop();
-            return Math.pow(b, a);
+            double a = stack.pop();
+            return Math.pow(a, b);
         }));
         supportedOperations.put("sin",new Operation("sin",4,OperationType.FUNCTION, stack -> {
             double a = stack.pop();

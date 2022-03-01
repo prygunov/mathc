@@ -61,6 +61,7 @@
         </constraints>
         <properties>
           <maximum value="500"/>
+          <minimum value="1"/>
           <paintLabels value="true"/>
           <paintTicks value="true"/>
         </properties>
@@ -129,7 +130,7 @@
       </component>
       <component id="85cab" class="javax.swing.JCheckBox" binding="resultCheckBox">
         <constraints>
-          <grid row="5" column="3" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="5" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="С решением"/>
@@ -151,14 +152,6 @@
         </constraints>
         <properties>
           <editable value="false"/>
-        </properties>
-      </component>
-      <component id="233eb" class="javax.swing.JButton" binding="setValuesButton">
-        <constraints>
-          <grid row="5" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Задать значения"/>
         </properties>
       </component>
       <scrollpane id="5c83d">

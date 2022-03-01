@@ -3,6 +3,7 @@ package net.artux.mathc.ui;
 import net.artux.mathc.Application;
 import net.artux.mathc.Config;
 import net.artux.mathc.Operation;
+import net.artux.mathc.data.DataInputModel;
 import net.artux.mathc.data.SolutionException;
 import net.artux.mathc.model.Expression;
 import net.artux.mathc.model.ExpressionPart;
@@ -13,7 +14,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Collection;
 
 import javax.swing.*;
 
@@ -28,19 +28,13 @@ public class InputForm extends JFrame {
     private JButton btnDeleteLast;
 
     private final Application application;
-    private static final String[] symbols = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "(", ")"};
-    private static final Collection<Operation> operations = Config.getSupportedOperations();
-
-    private Expression exp;
-    private ExpressionPart lastPart;
+    private final DataInputModel dataInputModel;
 
     ActionListener symbolActionListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
             JButton but = (JButton) e.getSource();
-            ExpressionPart expressionPart = new ExpressionPart(but.getText(), false);
-            exp.getContent().add(expressionPart);
-            lastPart = expressionPart;
+            dataInputModel.add((Character) but.getClientProperty("symbol"));
             updateUI();
         }
     };
@@ -49,50 +43,43 @@ public class InputForm extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             JButton but = (JButton) e.getSource();
-            Operation operation = Config.supportedOperations.get(but.getText());
-            ExpressionPart expressionPart = new ExpressionPart(operation.getName(), true);
-            exp.getContent().add(expressionPart);
-            if (expressionPart.isFunction()){
-                expressionPart = new ExpressionPart("(", false);
-                exp.getContent().add(expressionPart);
-            }
-            lastPart = expressionPart;
+            dataInputModel.add((Operation) but.getClientProperty("operation"));
             updateUI();
         }
     };
 
 
-    public InputForm(Application application) {
+    public InputForm(Application application, DataInputModel dataInputModel) {
         this.application = application;
+        this.dataInputModel = dataInputModel;
 
         setContentPane(root);
         setSize(500, 350);
         setLocationByPlatform(true);
         setTitle("Мастер функций");
 
-        exp = new Expression(new ArrayList<>());
-
         GridLayout grid = new GridLayout(0, 3);
         valuesPanel.setLayout(grid);
         GridLayout grid2 = new GridLayout(0, 3);
         operationsPanel.setLayout(grid2);
 
-        for (String value : symbols) {
-            JButton but = new JButton(value);
-            valuesPanel.add(but);
+        for (char value : dataInputModel.getSymbols()) {
+            JButton but = new JButton(String.valueOf(value));
+            but.putClientProperty("symbol", value);
             but.addActionListener(symbolActionListener);
+            valuesPanel.add(but);
         }
 
-        for (Operation operation : operations) {
+        for (Operation operation : dataInputModel.getOperations()) {
             JButton but = new JButton(operation.getName());
-            operationsPanel.add(but);
+            but.putClientProperty("operation", operation);
             but.addActionListener(funcActionListener);
+            operationsPanel.add(but);
         }
 
         btnAccept.addActionListener(e -> {
             try {
-                if (Validator.isValid(exp)){
-                    application.getDataModel().setExpression(exp);
+                if (dataInputModel.accept()){
                     setVisible(false);
                 }else
                     JOptionPane.showMessageDialog(this, "Выражение не задано","Ошибка", JOptionPane.ERROR_MESSAGE);
@@ -101,17 +88,12 @@ public class InputForm extends JFrame {
             }
         });
         btnClear.addActionListener(e -> {
-            exp = new Expression(new ArrayList<>());
+            dataInputModel.clear();
             updateUI();
         });
         btnDeleteLast.addActionListener(e -> {
-            if (exp.getContent().size()>0) {
-                exp.getContent().remove(lastPart);
-                if (exp.getContent().size() != 0)
-                    lastPart = exp.getContent().get(exp.getContent().size() - 1);
-                else lastPart = null;
-                updateUI();
-            }
+            dataInputModel.removeLast();
+            updateUI();
         });
 
         valuesPanel.revalidate();
@@ -119,15 +101,7 @@ public class InputForm extends JFrame {
     }
 
     void updateUI(){
-        inputField.setText(exp.toString());
+        inputField.setText(dataInputModel.getExpression().toString());
     }
 
-    @Override
-    public void setVisible(boolean b) {
-        super.setVisible(b);
-        try {
-            exp = application.getDataModel().getExpression();
-            updateUI();
-        } catch (SolutionException ignored) {}
-    }
 }

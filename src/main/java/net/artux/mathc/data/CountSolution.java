@@ -11,14 +11,14 @@ import java.util.Map;
 public class CountSolution {
 
     private final Stack<Double> stack;
-    private final Map<String, Double> values;
+    private final DataModel dataModel;
     private final Expression expression;
     private boolean done;
     private int i = 0;
 
-    public CountSolution(Expression expression, Map<String, Double> values) {
+    public CountSolution(Expression expression, DataModel dataModel) {
         stack = new Stack<>();
-        this.values = values;
+        this.dataModel = dataModel;
         this.expression = expression;
         done = false;
     }
@@ -37,7 +37,7 @@ public class CountSolution {
                             .compute(stack));
                 } else throw new SolutionException("Операция " + expressionPart.getValue() + " не поддерживается");
             } else {
-                Double d = values.get(expressionPart.getValue());
+                Double d = dataModel.getValues().get(expressionPart.getValue());
                 if (d != null)
                     stack.push(d);
                 else throw new SolutionException("Отсутствует значение для " + expressionPart.getValue());
@@ -56,8 +56,16 @@ public class CountSolution {
     }
 
     public String getPostfixWithSelection(){
-        StringBuilder builder = new StringBuilder(expression.toString());
-        builder.insert(i, '|');
+        StringBuilder builder = new StringBuilder();
+        for (int j = 0; j < expression.getContent().size(); j++) {
+            if (j != i)
+                builder.append(expression.getContent().get(j));
+            else {
+                builder.append("|");
+                builder.append(expression.getContent().get(j));
+                builder.append("|");
+            }
+        }
         return builder.toString();
     }
 }

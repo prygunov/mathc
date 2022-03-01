@@ -17,6 +17,11 @@ public class ExpressionPart {
         return command;
     }
 
+    public boolean isBracket() {
+        return value.equals("(") || value.equals(")");
+    }
+
+
     public boolean isFunction(){
         if (Config.supportedOperations.containsKey(getValue()))
             return Config.supportedOperations.get(getValue()).getType() == OperationType.FUNCTION;

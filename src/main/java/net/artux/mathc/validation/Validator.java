@@ -27,14 +27,16 @@ public class Validator {
 
     public static boolean isValid(Expression expression) throws ValidationException {
         if (expression.getContent().size()>2) {
-            int leftBrackets = 0;
-            int rightBrackets = 0;
+            int brackets = 0;
 
             ExpressionPart previousPart = expression.getContent().get(0);
             if (previousPart.getValue().equals("("))
-                leftBrackets++;
+                brackets++;
             else if (previousPart.getValue().equals(")"))
-                rightBrackets++;
+                brackets--;
+
+            if (previousPart.isCommand() && !previousPart.isFunction())
+                throw new ValidationException("Выражение не может начинаться с операции");
 
             for (int i = 1; i < expression.getContent().size(); i++) {
                 ExpressionPart current = expression.getContent().get(i);
@@ -44,14 +46,20 @@ public class Validator {
                 }
 
                 if (current.getValue().equals("("))
-                    leftBrackets++;
+                    brackets++;
                 else if (current.getValue().equals(")"))
-                    rightBrackets++;
+                    brackets--;
+
+                if (brackets<0)
+                    throw new ValidationException("Нарушена скобочная структура");
 
                 previousPart = current;
             }
 
-            if (rightBrackets != leftBrackets)
+            if (previousPart.isCommand())
+                throw new ValidationException("Выражение не может кончаться операцией или функцией");
+
+            if (brackets!=0)
                 throw new ValidationException("Количество левых скобок не соответствует правым");
 
             return true;

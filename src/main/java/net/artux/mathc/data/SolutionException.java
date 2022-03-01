@@ -6,8 +6,4 @@ public class SolutionException extends Exception{
         super(message);
     }
 
-    public SolutionException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
 }

@@ -4,6 +4,7 @@ import net.artux.mathc.model.Expression;
 import net.artux.mathc.model.ExpressionPart;
 import net.artux.mathc.ui.DataChangeListener;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -28,6 +29,12 @@ public class DataModel {
     public void setExpression(Expression expression) {
         solution = new Solution(expression);
         countSolution = null;
+        values = new HashMap<>();
+        for (ExpressionPart part :
+                expression.getContent()) {
+            if (!part.isCommand() && !part.isBracket())
+                values.put(part.getValue(), 0d);
+        }
         dataChangeListener.updateInputExpression(expression);
         updateSolution(solution);
     }
@@ -36,8 +43,12 @@ public class DataModel {
         return getSolution().getExpression();
     }
 
-    public void setValues(Map<String, Double> values) {
-        this.values = values;
+    public void setValue(String key, Double d) {
+        values.put(key, d);
+    }
+
+    public Map<String, Double> getValues() {
+        return values;
     }
 
     private void updateSolution(Solution solution) {
@@ -59,9 +70,7 @@ public class DataModel {
             solution.tick();
             updateSolution(solution);
         } else if (countSolution == null && countResult) {
-            if (values == null)
-                throw new SolutionException("Значения не заданы");
-            countSolution = new CountSolution(solution.getResultExpression(), values);
+            countSolution = new CountSolution(solution.getResultExpression(), this);
         } else if (countResult && !countSolution.isDone()) {
             countSolution.tick();
             dataChangeListener.updateStack(countSolution.getStack());
@@ -106,8 +115,13 @@ public class DataModel {
     }
 
     public void clear() {
-        setExpression(solution.getExpression());
+        solution = new Solution(solution.getExpression());
+        countSolution = null;
         updateSolution(solution);
+    }
+
+    public boolean isTimerRunning() {
+        return isTimerRunning;
     }
 
     class Repeater extends TimerTask {
