@@ -45,6 +45,10 @@ public class DataModel {
 
     public void setValue(String key, Double d) {
         values.put(key, d);
+        try {
+            if (isDone())
+                clear();
+        } catch (SolutionException ignored) {}
     }
 
     public Map<String, Double> getValues() {
@@ -71,6 +75,8 @@ public class DataModel {
             updateSolution(solution);
         } else if (countSolution == null && countResult) {
             countSolution = new CountSolution(solution.getResultExpression(), this);
+            dataChangeListener.updateStack(countSolution.getStack());
+            dataChangeListener.updatePostfix(countSolution.getPostfixWithSelection());
         } else if (countResult && !countSolution.isDone()) {
             countSolution.tick();
             dataChangeListener.updateStack(countSolution.getStack());
@@ -85,6 +91,7 @@ public class DataModel {
             stopTicks();
         else if (!isDone()) {
             isTimerRunning = true;
+            dataChangeListener.timerStatusChanged(true);
             lastTask = new Repeater(dataChangeListener);
             timer.scheduleAtFixedRate(lastTask, tickTime, tickTime);
         }
@@ -93,6 +100,7 @@ public class DataModel {
 
     public void stopTicks() {
         isTimerRunning = false;
+        dataChangeListener.timerStatusChanged(false);
         lastTask.cancel();
     }
 
@@ -118,10 +126,6 @@ public class DataModel {
         solution = new Solution(solution.getExpression());
         countSolution = null;
         updateSolution(solution);
-    }
-
-    public boolean isTimerRunning() {
-        return isTimerRunning;
     }
 
     class Repeater extends TimerTask {

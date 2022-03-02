@@ -91,19 +91,13 @@ public class MainForm extends JFrame implements DataChangeListener {
         autoButton.addActionListener(e -> {
             try {
                 application.getDataModel().delayTicks(timeSlider.getValue() * 10L);
-                if (application.getDataModel().isTimerRunning())
-                    autoButton.setText("Остановить");
-                else
-                    autoButton.setText("Автоматически");
             } catch (SolutionException ex) {
                 error(ex);
             }
         });
 
-        resultCheckBox.addChangeListener(e ->{
-            application.getDataModel().setCountResult(resultCheckBox.isSelected());
-            table1.setEnabled(resultCheckBox.isSelected());
-        } );
+        resultCheckBox.addChangeListener(e ->
+            application.getDataModel().setCountResult(resultCheckBox.isSelected()));
 
         tableModel.addTableModelListener(e -> {
             if (e.getType() == TableModelEvent.UPDATE){
@@ -170,7 +164,10 @@ public class MainForm extends JFrame implements DataChangeListener {
 
     @Override
     public void updateResult(Double d) {
-        resultValueTextField.setText(String.valueOf(d));
+        if (d.isNaN())
+            resultValueTextField.setText("Ошибка, не число");
+        else
+            resultValueTextField.setText(String.valueOf(d));
     }
 
     @Override
@@ -184,8 +181,15 @@ public class MainForm extends JFrame implements DataChangeListener {
     }
 
     @Override
+    public void timerStatusChanged(boolean isTimerRunning) {
+        if (isTimerRunning)
+            autoButton.setText("Остановить");
+        else
+            autoButton.setText("Автоматически");
+    }
+
+    @Override
     public void error(Exception e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, e.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+         JOptionPane.showMessageDialog(this, e.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
     }
 }

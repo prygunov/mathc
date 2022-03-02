@@ -16,6 +16,7 @@
         </constraints>
         <properties>
           <editable value="false"/>
+          <font size="20"/>
           <text value=""/>
         </properties>
       </component>
