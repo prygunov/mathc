@@ -13,11 +13,11 @@ import java.util.Collection;
 public class DataInputModelImpl implements DataInputModel{
 
     private Expression exp;
-    private final DataModelImpl dataModel;
+    private final DataModel dataModel;
     private static final char[] symbols = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', '(', ')'};
     private static final Collection<Operation> operations = Config.getSupportedOperations();
 
-    public DataInputModelImpl(DataModelImpl dataModel){
+    public DataInputModelImpl(DataModel dataModel){
         exp = new Expression(new ArrayList<>());
         this.dataModel = dataModel;
     }
