@@ -32,9 +32,12 @@ public class CountSolution {
             if (expressionPart.isCommand()) {
                 Operation operation = Config.supportedOperations.get(expressionPart.getValue());
                 if (operation != null) {
-                    stack.push(operation
+                    Double d = operation
                             .getComputer()
-                            .compute(stack));
+                            .compute(stack);
+                    if (d.isInfinite() || d.isNaN())
+                        throw new SolutionException("Ошибка, невозможно выполнить операцию");
+                    else stack.push(d);
                 } else throw new SolutionException("Операция " + expressionPart.getValue() + " не поддерживается");
             } else {
                 Double d = dataModel.getValues().get(expressionPart.getValue());

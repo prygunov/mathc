@@ -23,19 +23,19 @@ public class Solution {
         done = false;
     }
 
-    public void tick() throws SolutionException {
+    public void tick() throws SolutionException { // один такт для преобразования в постфиксную форму
         if (isDone())
             throw new SolutionException("Выражение уже преобразовано");
 
         if (i < expression.getContent().size()) {
             ExpressionPart expressionPart = expression.getContent().get(i++); // берем часть выражения
-            if (expressionPart.getValue().equals("(")) {
+            if (expressionPart.isLeftBracket()) {
                 push(expressionPart); // если левая скобка - в стек
-            } else if (expressionPart.getValue().equals(")")) {
+            } else if (expressionPart.isRightBracket()) {
                 if (pop())
-                    i--;// если правая скобка - выгружаем стек в очередь
+                    i--;// если правая скобка - выгружаем стек в очередь до первой левой скобки, остаемся на текущей части с помощью i--
             } else if (expressionPart.isCommand()) {
-                if (!stack.isEmpty() && !stack.peek().getValue().equals("(")) { // сработает если стек не пуст и последний элемент не (
+                if (!stack.isEmpty() && !stack.peek().isLeftBracket()) { // сработает если стек не пуст и указатель стека не на (
                     int lastPriority = getPriority(stack.peek());
                     int thisPriority = getPriority(expressionPart);
                     if (lastPriority >= thisPriority) {// если приоритет последней операции в стеке больше или равен текущему
@@ -46,7 +46,6 @@ public class Solution {
                         }
                     } else push(expressionPart);
                 }else push(expressionPart);
-
             } else {
                 resultExpression.add(expressionPart); // если это переменная - с чистой совестью добавляем в очередь
             }
@@ -76,7 +75,7 @@ public class Solution {
     //выгрузка до первой скобки
     private boolean pop() {
         ExpressionPart part = stack.pop();
-        if (part.getValue().equals("(")) {
+        if (part.isLeftBracket()) {
             return false;
         }
         resultExpression.add(part);
@@ -84,7 +83,7 @@ public class Solution {
     }
 
     private boolean pop(int priority) {
-        if (!stack.peek().getValue().equals("(")) {
+        if (!stack.peek().isLeftBracket()) {
             ExpressionPart part = stack.pop();
             if (getPriority(part) < priority) {
                 return false;

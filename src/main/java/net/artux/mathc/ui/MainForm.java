@@ -164,7 +164,7 @@ public class MainForm extends JFrame implements DataChangeListener {
 
     @Override
     public void updateResult(Double d) {
-        if (d.isNaN())
+        if (d.isNaN() || d.isInfinite())
             resultValueTextField.setText("Ошибка, не число");
         else
             resultValueTextField.setText(String.valueOf(d));

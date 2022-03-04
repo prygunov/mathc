@@ -21,6 +21,13 @@ public class ExpressionPart {
         return value.equals("(") || value.equals(")");
     }
 
+    public boolean isLeftBracket() {
+        return value.equals("(");
+    }
+
+    public boolean isRightBracket() {
+        return value.equals(")");
+    }
 
     public boolean isFunction(){
         if (Config.supportedOperations.containsKey(getValue()))

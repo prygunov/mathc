@@ -28,7 +28,7 @@
         <properties>
           <editable value="false"/>
           <font size="20"/>
-          <text value="Кликните для ввода"/>
+          <text value="Нажмите для ввода"/>
         </properties>
       </component>
       <component id="6670d" class="javax.swing.JButton" binding="resultButton">
