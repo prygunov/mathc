@@ -8,7 +8,7 @@ public interface DataChangeListener {
     void updateInputExpression(Expression expression);
     void updatePostfix(String s);
     void updateResult(Double d);
-    void updateStack(Stack stack);
+    void updateStack(Stack<?> stack);
     void timerStatusChanged(boolean status);
     void error(Exception e);
 

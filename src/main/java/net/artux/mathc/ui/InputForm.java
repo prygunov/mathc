@@ -1,21 +1,13 @@
 package net.artux.mathc.ui;
 
-import net.artux.mathc.Application;
-import net.artux.mathc.Config;
 import net.artux.mathc.Operation;
-import net.artux.mathc.data.DataInputModel;
-import net.artux.mathc.data.SolutionException;
-import net.artux.mathc.model.Expression;
-import net.artux.mathc.model.ExpressionPart;
+import net.artux.mathc.data.DataInputModelImpl;
 import net.artux.mathc.validation.ValidationException;
-import net.artux.mathc.validation.Validator;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-
-import javax.swing.*;
 
 public class InputForm extends JFrame {
 
@@ -27,8 +19,7 @@ public class InputForm extends JFrame {
     private JButton btnClear;
     private JButton btnDeleteLast;
 
-    private final Application application;
-    private final DataInputModel dataInputModel;
+    private final DataInputModelImpl dataInputModel;
 
     ActionListener symbolActionListener = new ActionListener() {
         @Override
@@ -49,8 +40,7 @@ public class InputForm extends JFrame {
     };
 
 
-    public InputForm(Application application, DataInputModel dataInputModel) {
-        this.application = application;
+    public InputForm(DataInputModelImpl dataInputModel) {
         this.dataInputModel = dataInputModel;
 
         setContentPane(root);

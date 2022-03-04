@@ -1,38 +1,30 @@
 package net.artux.mathc;
 
-import net.artux.mathc.data.DataInputModel;
-import net.artux.mathc.data.DataModel;
+import net.artux.mathc.data.DataInputModelImpl;
+import net.artux.mathc.data.DataModelImpl;
 import net.artux.mathc.ui.InputForm;
 import net.artux.mathc.ui.MainForm;
 
 public class Application{
 
-    private final MainForm mainForm; // структура окна входа
-    private final InputForm inputForm;
-    private final DataModel dataModel;
-    private final DataInputModel inputModel;
+    private final InputForm inputForm; // структура окна ввода
+    private final DataModelImpl dataModel; // мод
 
     Application(){
-        mainForm = new MainForm(this);
-        dataModel = new DataModel(mainForm);
-        inputModel = new DataInputModel(dataModel);
-        mainForm.setVisible(true);
-        inputForm = new InputForm(this, inputModel);
-    }
+        // структура главного окна
+        MainForm mainForm = new MainForm(this);
+        dataModel = new DataModelImpl(mainForm);
+        DataInputModelImpl inputModel = new DataInputModelImpl(dataModel);
+        inputForm = new InputForm(inputModel);
 
-    public MainForm getMainForm() {
-        return mainForm;
+        mainForm.setVisible(true);
     }
 
     public InputForm getInputForm() {
         return inputForm;
     }
 
-    public DataModel getDataModel() {
+    public DataModelImpl getDataModel() {
         return dataModel;
-    }
-
-    public DataInputModel getInputModel() {
-        return inputModel;
     }
 }

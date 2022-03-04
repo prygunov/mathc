@@ -11,14 +11,14 @@ import java.util.Map;
 public class CountSolution {
 
     private final Stack<Double> stack;
-    private final DataModel dataModel;
+    private final Map<String, Double> values;
     private final Expression expression;
     private boolean done;
     private int i = 0;
 
-    public CountSolution(Expression expression, DataModel dataModel) {
+    public CountSolution(Expression expression, Map<String, Double> values) {
         stack = new Stack<>();
-        this.dataModel = dataModel;
+        this.values = values;
         this.expression = expression;
         done = false;
     }
@@ -40,14 +40,14 @@ public class CountSolution {
                     else stack.push(d);
                 } else throw new SolutionException("Операция " + expressionPart.getValue() + " не поддерживается");
             } else {
-                Double d = dataModel.getValues().get(expressionPart.getValue());
+                Double d = values.get(expressionPart.getValue());
                 if (d != null)
                     stack.push(d);
                 else throw new SolutionException("Отсутствует значение для " + expressionPart.getValue());
             }
             if (i == expression.getContent().size())
                 done = true;
-        }
+        }else throw new SolutionException("Невозможно выполнить такт");
     }
 
     public Stack<Double> getStack() {

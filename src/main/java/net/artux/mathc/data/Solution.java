@@ -41,11 +41,11 @@ public class Solution {
                     if (lastPriority >= thisPriority) {// если приоритет последней операции в стеке больше или равен текущему
                         if (pop(getPriority(expressionPart))) {
                             i--; // выгружаем пока не встретим меньший приоритет
-                        }else{
+                        } else {
                             push(expressionPart);
                         }
                     } else push(expressionPart);
-                }else push(expressionPart);
+                } else push(expressionPart);
             } else {
                 resultExpression.add(expressionPart); // если это переменная - с чистой совестью добавляем в очередь
             }
@@ -62,7 +62,7 @@ public class Solution {
         return stack;
     }
 
-    public Expression getResultExpression() throws SolutionException{
+    public Expression getResultExpression() throws SolutionException {
         if (isDone())
             return new Expression(resultExpression);
         else throw new SolutionException("Выражение еще не преобразовано");
@@ -73,6 +73,7 @@ public class Solution {
     }
 
     //выгрузка до первой скобки
+    //false если выгрузка не произошла - встретили (
     private boolean pop() {
         ExpressionPart part = stack.pop();
         if (part.isLeftBracket()) {
@@ -82,16 +83,16 @@ public class Solution {
         return true;
     }
 
+    // false если выгрузка не произошла - встретили меньший приоритет
+    // false если стек оказался пуст после выгрузки
+    // true если выгрузка произошла + стек не пуст
     private boolean pop(int priority) {
-        if (!stack.peek().isLeftBracket()) {
-            ExpressionPart part = stack.pop();
-            if (getPriority(part) < priority) {
-                return false;
-            }
-            resultExpression.add(part);
-            return !stack.isEmpty();
+        ExpressionPart part = stack.pop();
+        if (getPriority(part) < priority) {
+            return false;
         }
-        return false;
+        resultExpression.add(part);
+        return !stack.isEmpty();
     }
 
     public Expression getExpression() {

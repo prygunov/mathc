@@ -1,27 +1,17 @@
 package net.artux.mathc.ui;
 
 import net.artux.mathc.Application;
-import net.artux.mathc.data.Solution;
 import net.artux.mathc.data.SolutionException;
 import net.artux.mathc.model.Expression;
 import net.artux.mathc.model.ExpressionPart;
 import net.artux.mathc.util.Stack;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultHighlighter;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Map;
 
 public class MainForm extends JFrame implements DataChangeListener {
@@ -50,18 +40,17 @@ public class MainForm extends JFrame implements DataChangeListener {
         listModel = new DefaultListModel<>();
         list1.setModel(listModel);
         listPanel.setBackground(list1.getBackground());
-        list1.setEnabled(false);
+        list1.setEnabled(false); // отключаем редактирование
 
         tableModel = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column != 0;
+                return column != 0; // запрещает редактировать первую колонку
             }
         };
         tableModel.addColumn("Переменные");
         tableModel.addColumn("Значения");
         table1.setModel(tableModel);
-        table1.getColumnName(1);
         table1.getTableHeader().setReorderingAllowed(false);
         table1.getTableHeader().setResizingAllowed(false);
 
@@ -122,7 +111,7 @@ public class MainForm extends JFrame implements DataChangeListener {
         expressionField.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                application.getInputForm().setVisible(true);
+                application.getInputForm().setVisible(true); // показываем окно ввода
             }
 
             @Override
@@ -171,12 +160,13 @@ public class MainForm extends JFrame implements DataChangeListener {
     }
 
     @Override
-    public void updateStack(Stack stack) {
+    public void updateStack(Stack<?> stack) {
         listModel.removeAllElements();
-        Enumeration expressionPartEnumeration = stack.elements();
+        Enumeration<?> expressionPartEnumeration = stack.elements();
         while (expressionPartEnumeration.hasMoreElements()) {
             listModel.add(0, expressionPartEnumeration.nextElement());
         }
+        //список перевернут, привязан к низу поля, поэтому считаем позицию указателя так
         list1.setSelectedIndex(stack.getElementCount() - 1 - stack.getPeekIndex());
     }
 
