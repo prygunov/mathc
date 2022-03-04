@@ -13,7 +13,7 @@ public class InputForm extends JFrame {
 
     private JPanel root;
     private JTextField inputField;
-    private JPanel valuesPanel;
+    private JPanel symbolsPanel;
     private JPanel operationsPanel;
     private JButton btnAccept;
     private JButton btnClear;
@@ -49,7 +49,7 @@ public class InputForm extends JFrame {
         setTitle("Мастер функций");
 
         GridLayout grid = new GridLayout(0, 3);
-        valuesPanel.setLayout(grid);
+        symbolsPanel.setLayout(grid);
         GridLayout grid2 = new GridLayout(0, 3);
         operationsPanel.setLayout(grid2);
 
@@ -57,7 +57,7 @@ public class InputForm extends JFrame {
             JButton but = new JButton(String.valueOf(value));
             but.putClientProperty("symbol", value);
             but.addActionListener(symbolActionListener);
-            valuesPanel.add(but);
+            symbolsPanel.add(but);
         }
 
         for (Operation operation : dataInputModel.getOperations()) {
@@ -86,8 +86,8 @@ public class InputForm extends JFrame {
             updateUI();
         });
 
-        valuesPanel.revalidate();
-        valuesPanel.repaint();
+        symbolsPanel.revalidate();
+        symbolsPanel.repaint();
     }
 
     void updateUI(){

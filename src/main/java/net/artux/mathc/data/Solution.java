@@ -39,7 +39,7 @@ public class Solution {
                     int lastPriority = getPriority(stack.peek());
                     int thisPriority = getPriority(expressionPart);
                     if (lastPriority >= thisPriority) {// если приоритет последней операции в стеке больше или равен текущему
-                        if (pop(getPriority(expressionPart))) {
+                        if (pop(thisPriority)) {
                             i--; // выгружаем пока не встретим меньший приоритет
                         } else {
                             push(expressionPart);

@@ -64,6 +64,14 @@ public class DataModelImpl implements DataModel{
         dataChangeListener.updateStack(solution.getStack());
     }
 
+    //обновляет отображение на экране стека и постфиксного выражения
+    private void updateSolution(CountSolution solution) {
+        dataChangeListener.updateStack(solution.getStack());
+        dataChangeListener.updatePostfix(solution.getPostfixWithSelection());
+        if (solution.isDone())
+            dataChangeListener.updateResult(solution.getStack().get(0));
+    }
+
     // с решением или нет
     public void setCountResult(boolean countResult) {
         this.countResult = countResult;
@@ -76,14 +84,10 @@ public class DataModelImpl implements DataModel{
             updateSolution(solution);
         } else if (countSolution == null && countResult) {
             countSolution = new CountSolution(solution.getResultExpression(), values);
-            dataChangeListener.updateStack(countSolution.getStack());
-            dataChangeListener.updatePostfix(countSolution.getPostfixWithSelection());
+            updateSolution(countSolution);
         } else if (countResult && !countSolution.isDone()) {
             countSolution.tick();
-            dataChangeListener.updateStack(countSolution.getStack());
-            dataChangeListener.updatePostfix(countSolution.getPostfixWithSelection());
-            if (countSolution.isDone())
-                dataChangeListener.updateResult(countSolution.getStack().get(0));
+            updateSolution(countSolution);
         } else dataChangeListener.error(new SolutionException("Преобразование завершено"));
     }
 
@@ -95,7 +99,7 @@ public class DataModelImpl implements DataModel{
             isTimerRunning = true;
             dataChangeListener.timerStatusChanged(true);
             lastTask = new Repeater(dataChangeListener);
-            timer.scheduleAtFixedRate(lastTask, tickTime, tickTime);
+            timer.scheduleAtFixedRate(lastTask, 0, tickTime);
         } else throw new SolutionException("Выражение уже преобразовано");
     }
 
@@ -110,13 +114,6 @@ public class DataModelImpl implements DataModel{
     public void allTicks() throws Exception {
         while (!isDone())
             tick();
-        if (countResult) {
-            dataChangeListener.updateStack(countSolution.getStack());
-            dataChangeListener.updatePostfix(countSolution.getPostfixWithSelection());
-            if (countSolution.isDone())
-                dataChangeListener.updateResult(countSolution.getStack().get(0));
-        }else updateSolution(solution);
-
     }
 
     private Solution getSolution() throws SolutionException {

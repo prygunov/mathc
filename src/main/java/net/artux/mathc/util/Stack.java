@@ -1,7 +1,5 @@
 package net.artux.mathc.util;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Vector;
 
 public class Stack<T> extends Vector<T> {
@@ -9,11 +7,6 @@ public class Stack<T> extends Vector<T> {
     private int peekIndex = -1;
 
     public Stack() {
-    }
-
-    public Stack(Collection<? extends T> c, int peekIndex) {
-        super(c);
-        this.peekIndex = peekIndex;
     }
 
     public void push(T t) {
@@ -29,7 +22,7 @@ public class Stack<T> extends Vector<T> {
     }
 
     @Override
-    public synchronized boolean isEmpty() {
+    public boolean isEmpty() {
         return peekIndex < 0;
     }
 
